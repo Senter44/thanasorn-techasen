@@ -1,0 +1,18 @@
+html, body { height: 100%; background: #17291e; color: #eef3e8; }
+main { min-height: 100%; height: 100%; }
+canvas, canvas.orbit { height: 100dvh; min-height: 0; width: 100%; cursor: default; }
+canvas:active { cursor: grabbing; }
+header, .hint, footer, #controls, #message { display: none!important; }
+#controls { height: 77px; min-height: 77px; padding: 12px 18px; gap: 16px; flex-wrap: nowrap; background: #17261f; border-color: #50624b; align-items: center; }
+#controls label:not(.height), #reset { display: none; }
+.height { max-width: none; flex: 1; gap: 3px; font-size: 14px; }
+.height > span { display: none; }
+input { accent-color: #c6daac; height: 20px; }
+#pause { padding: 7px 14px; font-size: 14px; border: 1px solid #6a7d5a; border-radius: 3px; background: transparent; min-width: 64px; }
+#status { font-size: 12px; min-width: 84px; color: #c0cdb4; }
+#message { font-size: 14px; background: #17291ef2; color: #e8efdf; border: 1px solid #788967; z-index: 4; }
+#scene { background: center / cover url('../bamboo/assets/garden.png'); }
+@media (max-width: 400px) {
+  #controls { gap: 10px; padding: 12px; }
+  #status { min-width: 78px; }
+}

@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="A hollow Blender bamboo model with interactive Splash WebGPU liquid."><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230e231b'/%3E%3Cpath d='M27 8L12 13v5L27 13' fill='%238ba663'/%3E%3Cpath d='M11 21q-5 7 0 7t0-7' fill='%23d7eee2'/%3E%3C/svg%3E"><title>Bamboo · 3D water</title>  <script type="module" crossorigin src="./assets/index-uBxLndod.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-BRaEeNYo.css">
+  <link rel="stylesheet" href="./portfolio.css?v=zen-2">
+  <script type="module" src="./portfolio.js?v=zen-5"></script>
+</head>
+<body>
+  <main>
+    <canvas id="scene" class="orbit" tabindex="0" aria-label="Interactive 3D tipping bamboo fountain. Drag to orbit; arrow keys rotate the view. Home resets the view."></canvas>
+    <header><a href="../" target="_top" aria-label="Back to portfolio">← Portfolio</a><h1>Shishi-odoshi</h1><p>Fill. Tip. Empty. Return.</p></header>
+    <div class="hint">Water weight tips the bamboo. Drag to look around.</div>
+    <div id="message" role="status">Preparing the 3D scene…</div>
+    <form id="controls" aria-label="Scene controls" onsubmit="return false">
+      <label class="height">Water flow <input id="height" type="range" min="0" max="100" value="40"><span>Off <span>More</span></span></label>
+      <label>Mechanism <select id="interaction"><option value="orbit">Automatic · orbit view</option><option value="tilt">Manual · move bamboo</option></select></label>
+      <button type="button" id="pause" aria-pressed="false">Pause</button>
+      <button type="button" id="reset">Reset fountain</button>
+      <output id="status" aria-live="off">Starting</output>
+    </form>
+    <footer><span>Blender geometry · Splash liquid</span><a href="./bamboo.glb" download>3D model</a><a href="../#work" target="_top">Selected work</a></footer>
+  </main>
+</body>
+</html>
