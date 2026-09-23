@@ -4,6 +4,7 @@ import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {fountainCycle,limitPixelRatio,pickDestination,createTapTracker} from './garden-math.mjs';
 import {detailGardenSurfaces,detailPondWater,addGroundDetails} from './scene-details.js?v=4';
 import {addFocusDetails} from './focus-details.js?v=4';
+import {addDetailedDiorama} from './detail-diorama.js';
 
 const anchors = {
   toolkit:new THREE.Vector3(-4,2.2,-2),
@@ -67,6 +68,7 @@ export async function createGarden({canvas,container,onSelect,onError}) {
   scene.add(garden.scene);
   addGroundDetails(scene);
   addFocusDetails(scene);
+  addDetailedDiorama(scene);
   const pond=garden.scene.getObjectByName('PondWater');
   if(pond?.isMesh){
     pond.material.dispose();
