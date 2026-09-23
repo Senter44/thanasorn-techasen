@@ -30,10 +30,17 @@ test('the complete Three.js import graph is vendored locally',()=>{
     const source=readFileSync(url,'utf8');
     for(const [,specifier] of source.matchAll(/^[ \t]*(?:import|export)\s+(?:[^;]*?\sfrom\s*)?['"]([^'"]+)['"]/gm)){
       const target=specifier==='three'?new URL('vendor/three.module.js',root):specifier.startsWith('three/addons/')?new URL('vendor/addons/'+specifier.slice(13),root):new URL(specifier,url);
+      target.search='';
       visit(target);
     }
   }
   visit(new URL('scene.js',root));
   assert.ok(seen.size>=7);
   for(const asset of ['assets/garden.glb','bamboo-3d/bamboo.glb'])assert.ok(existsSync(new URL(asset,root)),asset);
+});
+
+test('changed scene detail modules use revisioned URLs for returning visitors', () => {
+  const scene = readFileSync(new URL('../dist/scene.js', import.meta.url), 'utf8');
+  assert.match(scene, /scene-details\.js\?v=4/);
+  assert.match(scene, /focus-details\.js\?v=4/);
 });
