@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {roofSurfaceAt, roofTilePlan, scatterEllipse, gardenGroundcoverPlan, bridgePlankPlan} from '../dist/detail-layout.mjs';
+import {roofSurfaceAt, roofTilePlan, scatterEllipse, gardenGroundcoverPlan, gardenMeadowPlan, bridgePlankPlan} from '../dist/detail-layout.mjs';
 
 test('roof tiles follow the curved pavilion profile without exceeding its eaves', () => {
   const tiles = roofTilePlan();
@@ -44,4 +44,14 @@ test('pond bridge has a low, symmetric arch inside the water footprint', () => {
   assert.ok(planks.every(plank => plank.y >= .16 && plank.y < .5));
   assert.ok(Math.abs(planks[0].y - planks.at(-1).y) < 1e-10);
   assert.ok(planks[5].y > planks[0].y);
+});
+
+test('broad green spaces fill garden margins without swallowing the stone path', () => {
+  const patches = gardenMeadowPlan();
+  assert.ok(patches.length >= 6);
+  assert.ok(patches.reduce((area, patch) => area + Math.PI * patch.radiusX * patch.radiusZ, 0) > 14);
+  assert.ok(patches.every(patch => patch.radiusX > .45 && patch.radiusZ > .35));
+  assert.ok(patches.every(patch => Math.abs(patch.x) + patch.radiusX < 7.35 && Math.abs(patch.z) + patch.radiusZ < 4.4));
+  const path = [[-2.30,-.12],[-1.48,.22],[-.68,.52],[.20,.72],[.95,1.16],[1.35,1.92],[1.20,2.77],[.63,3.53],[-.14,4.03]];
+  assert.ok(patches.every(patch => path.every(([x,z]) => ((x - patch.x) / (patch.radiusX + .23)) ** 2 + ((z - patch.z) / (patch.radiusZ + .23)) ** 2 > 1)));
 });
