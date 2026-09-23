@@ -41,8 +41,15 @@ test('the complete Three.js import graph is vendored locally',()=>{
 
 test('changed scene detail modules use revisioned URLs for returning visitors', () => {
   const scene = readFileSync(new URL('../dist/scene.js', import.meta.url), 'utf8');
+  const diorama = readFileSync(new URL('../dist/detail-diorama.js', import.meta.url), 'utf8');
+  const main = readFileSync(new URL('../dist/main.js', import.meta.url), 'utf8');
+  const html = readFileSync(new URL('../dist/index.html', import.meta.url), 'utf8');
   assert.match(scene, /scene-details\.js\?v=4/);
   assert.match(scene, /focus-details\.js\?v=4/);
+  assert.match(scene, /detail-diorama\.js\?v=2/);
+  assert.match(diorama, /detail-layout\.mjs\?v=2/);
+  assert.match(main, /scene\.js\?v=6/);
+  assert.match(html, /main\.js\?v=three-6/);
 });
 
 test('high-detail preview keeps its photographic stone maps local and web-sized', () => {

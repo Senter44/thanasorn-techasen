@@ -4,7 +4,7 @@ import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {fountainCycle,limitPixelRatio,pickDestination,createTapTracker} from './garden-math.mjs';
 import {detailGardenSurfaces,detailPondWater,addGroundDetails} from './scene-details.js?v=4';
 import {addFocusDetails} from './focus-details.js?v=4';
-import {addDetailedDiorama} from './detail-diorama.js';
+import {addDetailedDiorama} from './detail-diorama.js?v=2';
 import {applyPhotographicStone} from './photo-materials.js';
 
 const anchors = {

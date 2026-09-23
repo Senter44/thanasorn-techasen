@@ -65,3 +65,19 @@ export function gardenGroundcoverPlan() {
     contact: scatterEllipse({seed: 907, count: 55, x: 4, z: 2.5, radiusX: 2.1, radiusZ: 1.45, inner: .82}),
   };
 }
+
+export function gardenMeadowPlan() {
+  return [
+    {x: -.05, z: -3.36, radiusX: 1.25, radiusZ: .55, seed: 1103},
+    {x: 5.92, z: -3.18, radiusX: 1.0, radiusZ: .65, seed: 1201},
+    {x: 4.15, z: -.05, radiusX: 1.24, radiusZ: .79, seed: 1259},
+    {x: 6.08, z: -.88, radiusX: .86, radiusZ: 1.2, seed: 1301},
+    {x: -6.34, z: .68, radiusX: .61, radiusZ: .84, seed: 1357},
+    {x: -6.12, z: 3.43, radiusX: .8, radiusZ: .56, seed: 1409},
+    {x: -3.53, z: 3.62, radiusX: 1.2, radiusZ: .55, seed: 1501},
+    {x: 2.9, z: .08, radiusX: .91, radiusZ: .56, seed: 1601},
+    {x: -.68, z: 2.76, radiusX: .62, radiusZ: .66, seed: 1709},
+    {x: -.74, z: -1.45, radiusX: .77, radiusZ: .61, seed: 1801},
+    {x: 6.13, z: 3.65, radiusX: .66, radiusZ: .51, seed: 1907},
+  ];
+}

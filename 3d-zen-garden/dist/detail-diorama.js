@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import {bridgePlankPlan, gardenGroundcoverPlan, roofTilePlan, scatterEllipse} from './detail-layout.mjs';
+import {bridgePlankPlan, gardenGroundcoverPlan, gardenMeadowPlan, roofTilePlan, scatterEllipse} from './detail-layout.mjs?v=2';
 
 const leafColors = [0x52754b, 0x618257, 0x789366, 0x667b50, 0x597963].map(color => new THREE.Color(color));
 const slateColors = [0x52695d, 0x5d715f, 0x6b7865, 0x4b635b, 0x76816b, 0x586d64, 0x657766].map(color => new THREE.Color(color));
@@ -104,9 +104,52 @@ function tuftGeometry() {
   return geometry;
 }
 
+function addMeadowPatches(scene) {
+  const group = new THREE.Group(); group.name = 'GardenGreenSpaces';
+  const material = new THREE.MeshStandardMaterial({vertexColors: true, roughness: 1, side: THREE.DoubleSide});
+  const shades = [0x628a56, 0x71935d, 0x5d8150, 0x789b66];
+  gardenMeadowPlan().forEach(({x, z, radiusX, radiusZ, seed}, patchIndex) => {
+    const segments = 28;
+    const positions = [x, .032, z];
+    const colors = [...new THREE.Color(shades[patchIndex % shades.length]).toArray()];
+    const indices = [];
+    for (let ring = 1; ring <= 2; ring++) {
+      for (let i = 0; i < segments; i++) {
+        const angle = i * Math.PI * 2 / segments;
+        const waviness = .91 + .055 * Math.sin(angle * 5 + seed) + .035 * Math.sin(angle * 9 - seed);
+        const reach = waviness * ring / 2;
+        positions.push(x + Math.cos(angle) * radiusX * reach, ring === 1 ? .027 : .011, z + Math.sin(angle) * radiusZ * reach);
+        const color = new THREE.Color(shades[(patchIndex + i % 4) % shades.length]);
+        if (ring === 2) color.lerp(new THREE.Color(0x9ba66c), .24);
+        colors.push(...color.toArray());
+        if (ring === 1) indices.push(0, 1 + (i + 1) % segments, 1 + i);
+        else {
+          const inner = 1 + i, nextInner = 1 + (i + 1) % segments;
+          const outer = 1 + segments + i, nextOuter = 1 + segments + (i + 1) % segments;
+          indices.push(inner, nextInner, outer, nextInner, nextOuter, outer);
+        }
+      }
+    }
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+    geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+    geometry.setIndex(indices);
+    geometry.computeVertexNormals();
+    const patch = new THREE.Mesh(geometry, material);
+    patch.name = 'MossAndGrassMeadow';
+    patch.receiveShadow = true;
+    group.add(patch);
+  });
+  scene.add(group);
+}
+
 function addGroundcover(scene) {
   const plan = gardenGroundcoverPlan();
-  const points = Object.values(plan).flat();
+  const points = [
+    ...Object.values(plan).flat(),
+    ...gardenMeadowPlan().flatMap(({seed, x, z, radiusX, radiusZ}) =>
+      scatterEllipse({seed, count: 34, x, z, radiusX: radiusX * .83, radiusZ: radiusZ * .83})),
+  ];
   const group = new THREE.Group(); group.name = 'DetailedGardenGroundcover';
   const tufts = new THREE.InstancedMesh(
     tuftGeometry(),
@@ -232,6 +275,7 @@ function addPondBridge(scene) {
 export function addDetailedDiorama(scene) {
   addRoof(scene);
   addPavilionJoinery(scene);
+  addMeadowPatches(scene);
   addGroundcover(scene);
   addBambooThicket(scene);
   addPathGravel(scene);
