@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {fountainCycle,limitPixelRatio,pickDestination,createTapTracker} from './garden-math.mjs';
+import {detailGardenSurfaces,addGroundDetails} from './scene-details.js';
 
 const anchors = {
   toolkit:new THREE.Vector3(-4,2.2,-2),
@@ -16,7 +17,7 @@ export async function createGarden({canvas,container,onSelect,onError}) {
   renderer.setClearColor(0x000000,0);
   renderer.outputColorSpace=THREE.SRGBColorSpace;
   renderer.toneMapping=THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure=1.25;
+  renderer.toneMappingExposure=1.08;
   renderer.shadowMap.enabled=true;
   renderer.shadowMap.type=THREE.PCFShadowMap;
   renderer.shadowMap.autoUpdate=false;
@@ -32,18 +33,18 @@ export async function createGarden({canvas,container,onSelect,onError}) {
   controls.maxPolarAngle=1.15;
   controls.minAzimuthAngle=-.6;
   controls.maxAzimuthAngle=1.05;
-  scene.add(new THREE.HemisphereLight(0xfff6dc,0x52654a,2.5));
-  const sunlight=new THREE.DirectionalLight(0xffebc6,3.2);
+  scene.add(new THREE.HemisphereLight(0xe4e7d6,0x46594e,1.35));
+  const sunlight=new THREE.DirectionalLight(0xffead0,2.45);
   sunlight.position.set(-7,15,7);
   sunlight.castShadow=true;
   sunlight.shadow.mapSize.setScalar(innerWidth<700?1024:2048);
   Object.assign(sunlight.shadow.camera,{left:-13,right:13,top:11,bottom:-11,near:1,far:40});
   sunlight.shadow.bias=-.0005;
-  sunlight.shadow.normalBias=.025;
+  sunlight.shadow.normalBias=.018;
   scene.add(sunlight);
-  const fillLight=new THREE.DirectionalLight(0xc8dddc,.6);
+  const fillLight=new THREE.DirectionalLight(0xc8dddc,.4);
   fillLight.position.set(8,5,-6);scene.add(fillLight);
-  const shadowFloor=new THREE.Mesh(new THREE.PlaneGeometry(200,200),new THREE.ShadowMaterial({opacity:.13}));
+  const shadowFloor=new THREE.Mesh(new THREE.PlaneGeometry(200,200),new THREE.ShadowMaterial({opacity:.19}));
   shadowFloor.rotation.x=-Math.PI/2;shadowFloor.position.y=-.8;shadowFloor.receiveShadow=true;scene.add(shadowFloor);
 
   const loader=new GLTFLoader();
@@ -54,6 +55,7 @@ export async function createGarden({canvas,container,onSelect,onError}) {
     controls.dispose();renderer.dispose();throw error;
   }
   const selectable=[];
+  detailGardenSurfaces(garden.scene);
   garden.scene.traverse(object=>{
     if(!object.isMesh)return;
     object.castShadow=true;object.receiveShadow=true;
@@ -62,6 +64,7 @@ export async function createGarden({canvas,container,onSelect,onError}) {
     if(destination){object.userData.destination=destination;selectable.push(object);}
   });
   scene.add(garden.scene);
+  addGroundDetails(scene);
   const pond=garden.scene.getObjectByName('PondWater');
   if(pond?.isMesh){
     pond.material.dispose();
@@ -133,9 +136,9 @@ export async function createGarden({canvas,container,onSelect,onError}) {
     transition=null;
     const narrow=container.clientWidth<700;
     narrowView=narrow;
-    camera.position.set(narrow?15:10,narrow?21:12,narrow?26:15);
-    controls.target.set(0,.1,0);
-    controls.minDistance=narrow?23:16;controls.maxDistance=narrow?45:36;
+    camera.position.set(narrow?15:9.3,narrow?21:11,narrow?26:14.5);
+    controls.target.set(0,-.3,0);
+    controls.minDistance=narrow?23:14;controls.maxDistance=narrow?45:36;
     controls.update();needsRender=true;schedule();
   }
   function resize(){
@@ -200,7 +203,7 @@ export async function createGarden({canvas,container,onSelect,onError}) {
   return {
     setActive(value){if(!alive||failed)return;active=value;last=0;needsRender=true;schedule();},
     reset,
-    focus(place,animate=true){const anchor=anchors[place];if(!anchor||!alive||failed)return;const target=anchor.clone().multiplyScalar(.5);const to=target.clone().add(new THREE.Vector3(10,13,17));if(animate){transition={start:performance.now(),from:camera.position.clone(),to,targetFrom:controls.target.clone(),targetTo:target};}else{transition=null;camera.position.copy(to);controls.target.copy(target);needsRender=true;}schedule();},
+    focus(place,animate=true){const anchor=anchors[place];if(!anchor||!alive||failed)return;const target=anchor.clone().multiplyScalar(.5);const to=target.clone().add(new THREE.Vector3(8.5,10.5,14.5));if(animate){transition={start:performance.now(),from:camera.position.clone(),to,targetFrom:controls.target.clone(),targetTo:target};}else{transition=null;camera.position.copy(to);controls.target.copy(target);needsRender=true;}schedule();},
     dispose(){alive=false;cancelAnimationFrame(frame);observer.disconnect();visibilityObserver.disconnect();document.removeEventListener('visibilitychange',onVisibility);controls.dispose();const geometries=new Set(),materials=new Set(),textures=new Set();scene.traverse(object=>{if(object.geometry)geometries.add(object.geometry);for(const material of Array.isArray(object.material)?object.material:object.material?[object.material]:[]){materials.add(material);for(const value of Object.values(material))if(value?.isTexture)textures.add(value);}});geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());textures.forEach(t=>t.dispose());renderer.dispose();},
   };
 }
