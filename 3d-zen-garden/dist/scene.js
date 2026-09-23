@@ -139,7 +139,7 @@ export async function createGarden({canvas,container,onSelect,onError}) {
     transition=null;
     const narrow=container.clientWidth<700;
     narrowView=narrow;
-    camera.position.set(narrow?15:9.3,narrow?21:11,narrow?26:14.5);
+    camera.position.set(narrow?15:8.4,narrow?21:9.9,narrow?26:13.1);
     controls.target.set(0,-.3,0);
     controls.minDistance=narrow?23:14;controls.maxDistance=narrow?45:36;
     controls.update();needsRender=true;schedule();

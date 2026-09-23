@@ -31,7 +31,7 @@ export function rockRelief(x, y, z, seed = 0) {
   const broad = noise3(x * 1.5, y * 1.5, z * 1.5, seed) - .5;
   const medium = noise3(x * 4.5, y * 4.5, z * 4.5, seed + 11) - .5;
   const fine = noise3(x * 12, y * 12, z * 12, seed + 29) - .5;
-  return Math.max(-1, Math.min(1, broad * 1.15 + medium * .7 + fine * .22));
+  return Math.max(-1, Math.min(1, broad * 2.2 + medium * 1.25 + fine * .4));
 }
 
 export function sampleSurface(kind, x, y) {
@@ -41,12 +41,14 @@ export function sampleSurface(kind, x, y) {
   const fleck = hash(Math.floor(x), Math.floor(y), 53);
   let r, g, b, bump;
   if (kind === 'stone') {
-    const mineral = broad * 24 + medium * 28 + fine * 11;
-    const lichen = noise2(x / 31, y / 31, 67) > .69 ? 1 : 0;
-    r = 225 + mineral - lichen * 17;
-    g = 228 + mineral + lichen * 2;
-    b = 222 + mineral - lichen * 19;
-    bump = 128 + broad * 38 + medium * 63 + fine * 56 + (fleck - .5) * 43;
+    const mineral = broad * 43 + medium * 47 + fine * 18;
+    const lichen = noise2(x / 31, y / 31, 67) > .63 ? 1 : 0;
+    const fissure = Math.abs(noise2(x / 13, y / 13, 91) - .5) < .022 ? 1 : 0;
+    const darkFleck = fleck > .965 ? 1 : 0;
+    r = 229 + mineral - lichen * 23 - fissure * 29 - darkFleck * 20;
+    g = 230 + mineral - lichen * 4 - fissure * 28 - darkFleck * 20;
+    b = 224 + mineral - lichen * 24 - fissure * 27 - darkFleck * 18;
+    bump = 128 + broad * 55 + medium * 74 + fine * 65 - fissure * 38 + (fleck - .5) * 50;
   } else if (kind === 'water') {
     const wave = Math.sin(y * .16 + broad * 8) * 2.8;
     const tone = broad * 18 + medium * 15 + wave;

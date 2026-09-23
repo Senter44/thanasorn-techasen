@@ -54,28 +54,60 @@ function addPlanarUvs(geometry, kind) {
   if (!position) return;
   const uvs = new Float32Array(position.count * 2);
   const grain = kind === 'wood' || kind === 'roof';
-  if (kind === 'water') geometry.computeBoundingBox();
+  if (kind === 'water' || kind === 'stone') geometry.computeBoundingBox();
   const bounds = geometry.boundingBox;
+  const uprightStone = kind === 'stone' && bounds.max.y - bounds.min.y > Math.max(bounds.max.x - bounds.min.x, bounds.max.z - bounds.min.z) * .8;
   for (let i = 0; i < position.count; i++) {
     const x = position.getX(i), y = position.getY(i), z = position.getZ(i);
-    uvs[i * 2] = kind === 'water' ? (x - bounds.min.x) / (bounds.max.x - bounds.min.x || 1) : grain ? x * 1.8 + z * .3 : x * 1.5;
-    uvs[i * 2 + 1] = kind === 'water' ? (z - bounds.min.z) / (bounds.max.z - bounds.min.z || 1) : grain ? y * 1.5 + z * 1.1 : z * 1.5;
+    uvs[i * 2] = kind === 'water' ? (x - bounds.min.x) / (bounds.max.x - bounds.min.x || 1) : grain ? x * 1.8 + z * .3 : uprightStone ? x * 1.7 + z * .85 : x * 1.5;
+    uvs[i * 2 + 1] = kind === 'water' ? (z - bounds.min.z) / (bounds.max.z - bounds.min.z || 1) : grain ? y * 1.5 + z * 1.1 : uprightStone ? y * 2.2 + z * .55 : z * 1.5;
   }
   geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
 }
 
+function subdivideRock(source, levels) {
+  const sourcePosition = source.getAttribute('position');
+  const vertices = [];
+  for (let i = 0; i < sourcePosition.count; i++) vertices.push(sourcePosition.getX(i), sourcePosition.getY(i), sourcePosition.getZ(i));
+  let indices = source.index ? [...source.index.array] : Array.from({length: sourcePosition.count}, (_, i) => i);
+  for (let level = 0; level < levels; level++) {
+    const edges = new Map();
+    const midpoint = (a, b) => {
+      const key = a < b ? `${a}:${b}` : `${b}:${a}`;
+      if (edges.has(key)) return edges.get(key);
+      const next = vertices.length / 3;
+      for (let axis = 0; axis < 3; axis++) vertices.push((vertices[a * 3 + axis] + vertices[b * 3 + axis]) / 2);
+      edges.set(key, next);
+      return next;
+    };
+    const divided = [];
+    for (let i = 0; i < indices.length; i += 3) {
+      const a = indices[i], b = indices[i + 1], c = indices[i + 2];
+      const ab = midpoint(a, b), bc = midpoint(b, c), ca = midpoint(c, a);
+      divided.push(a, ab, ca, ab, b, bc, ca, bc, c, ab, bc, ca);
+    }
+    indices = divided;
+  }
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+  geometry.setIndex(indices);
+  geometry.computeVertexNormals();
+  return geometry;
+}
+
 function weatherRock(object) {
-  const geometry = object.geometry.clone();
+  const source = object.geometry;
+  if (!source.getAttribute('position')) return;
+  const levels = /ProjectsStandingStone|JourneySteppingStone/.test(object.name) ? 2 : 1;
+  const geometry = subdivideRock(source, levels);
   const position = geometry.getAttribute('position');
-  if (!position) return;
   geometry.computeBoundingBox();
-  if (!geometry.getAttribute('normal')) geometry.computeVertexNormals();
   const normal = geometry.getAttribute('normal');
   const center = new THREE.Vector3();
   const extent = new THREE.Vector3();
   geometry.boundingBox.getCenter(center);
   geometry.boundingBox.getSize(extent);
-  const amplitude = Math.min(.055, Math.max(extent.x, extent.y, extent.z) * .028);
+  const amplitude = Math.min(.11, Math.max(extent.x, extent.y, extent.z) * .065);
   const seed = [...object.name].reduce((value, letter) => value + letter.charCodeAt(0), 0);
   for (let i = 0; i < position.count; i++) {
     const x = position.getX(i), y = position.getY(i), z = position.getZ(i);
