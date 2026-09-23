@@ -12,7 +12,7 @@ const anchors = {
   projects:new THREE.Vector3(3,1.8,-2),
   experience:new THREE.Vector3(0,.25,.3),
   about:new THREE.Vector3(-4,2.3,2.7),
-  contact:new THREE.Vector3(4,.3,2.5),
+  contact:new THREE.Vector3(5.25,.35,2.6),
 };
 
 export async function createGarden({canvas,container,onSelect,onError}) {
@@ -147,7 +147,7 @@ export async function createGarden({canvas,container,onSelect,onError}) {
     transition=null;
     const narrow=container.clientWidth<700;
     narrowView=narrow;
-    camera.position.set(narrow?15:8.4,narrow?21:9.9,narrow?26:13.1);
+    camera.position.set(narrow?13:8.4,narrow?18:9.9,narrow?22.5:13.1);
     controls.target.set(0,-.3,0);
     controls.minDistance=narrow?23:14;controls.maxDistance=narrow?45:36;
     controls.update();needsRender=true;schedule();
