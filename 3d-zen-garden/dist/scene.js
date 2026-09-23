@@ -5,6 +5,7 @@ import {fountainCycle,limitPixelRatio,pickDestination,createTapTracker} from './
 import {detailGardenSurfaces,detailPondWater,addGroundDetails} from './scene-details.js?v=4';
 import {addFocusDetails} from './focus-details.js?v=4';
 import {addDetailedDiorama} from './detail-diorama.js';
+import {applyPhotographicStone} from './photo-materials.js';
 
 const anchors = {
   toolkit:new THREE.Vector3(-4,2.2,-2),
@@ -58,6 +59,11 @@ export async function createGarden({canvas,container,onSelect,onError}) {
   }
   const selectable=[];
   detailGardenSurfaces(garden.scene);
+  try {
+    await applyPhotographicStone(garden.scene);
+  } catch (error) {
+    console.warn('Photographic stone texture unavailable; using procedural surfaces.', error);
+  }
   garden.scene.traverse(object=>{
     if(!object.isMesh)return;
     object.castShadow=true;object.receiveShadow=true;
