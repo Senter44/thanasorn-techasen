@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import {gardenGroundcoverPlan, roofTilePlan, scatterEllipse} from './detail-layout.mjs';
 
-const leafColors = [0x355f3d, 0x477448, 0x5d8150, 0x718956, 0x486d51].map(color => new THREE.Color(color));
+const leafColors = [0x52754b, 0x618257, 0x789366, 0x667b50, 0x597963].map(color => new THREE.Color(color));
 const slateColors = [0x52695d, 0x5d715f, 0x6b7865, 0x4b635b, 0x76816b, 0x586d64, 0x657766].map(color => new THREE.Color(color));
 const wood = new THREE.MeshStandardMaterial({color: 0x654d35, roughness: .88});
 const darkWood = new THREE.MeshStandardMaterial({color: 0x3d3229, roughness: .9});
@@ -92,9 +92,9 @@ function tuftGeometry() {
   for (let i = 0; i < 7; i++) {
     const angle = i * Math.PI * (3 - Math.sqrt(5));
     const dx = Math.cos(angle), dz = Math.sin(angle);
-    const rise = .15 + (i % 3) * .03;
-    const reach = .08 + (i % 4) * .015;
-    const sideX = -dz * .015, sideZ = dx * .015;
+    const rise = .09 + (i % 3) * .022;
+    const reach = .075 + (i % 4) * .012;
+    const sideX = -dz * .009, sideZ = dx * .009;
     positions.push(-sideX, 0, -sideZ, dx * reach * .45, rise, dz * reach * .45, dx * reach, rise * .24, dz * reach);
     positions.push(sideX, 0, sideZ, dx * reach, rise * .24, dz * reach, dx * reach * .45, rise, dz * reach * .45);
   }
