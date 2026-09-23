@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {roofSurfaceAt, roofTilePlan, scatterEllipse, gardenGroundcoverPlan} from '../dist/detail-layout.mjs';
+import {roofSurfaceAt, roofTilePlan, scatterEllipse, gardenGroundcoverPlan, bridgePlankPlan} from '../dist/detail-layout.mjs';
 
 test('roof tiles follow the curved pavilion profile without exceeding its eaves', () => {
   const tiles = roofTilePlan();
@@ -35,4 +35,13 @@ test('each portfolio landmark has ample bounded groundcover', () => {
   assert.ok(Object.values(plan).every(points => points.length >= 30));
   assert.ok(Object.values(plan).flat().every(point => Math.abs(point.x) < 7.3 && Math.abs(point.z) < 4.4));
   assert.ok(Object.values(plan).flat().length < 450);
+});
+
+test('pond bridge has a low, symmetric arch inside the water footprint', () => {
+  const planks = bridgePlankPlan();
+  assert.equal(planks.length, 11);
+  assert.ok(planks.every(plank => plank.x > 2.8 && plank.x < 5.2 && plank.z === 3.03));
+  assert.ok(planks.every(plank => plank.y >= .16 && plank.y < .5));
+  assert.equal(planks[0].y, planks.at(-1).y);
+  assert.ok(planks[5].y > planks[0].y);
 });
