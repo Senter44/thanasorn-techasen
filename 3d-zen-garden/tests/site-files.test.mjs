@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync,existsSync} from 'node:fs';
+import {readFileSync,existsSync,statSync} from 'node:fs';
 const html = readFileSync(new URL('../dist/index.html', import.meta.url), 'utf8');
 test('every garden destination has matching readable content', () => {
   for (const place of ['projects','experience','about','toolkit','contact']) {
@@ -43,4 +43,15 @@ test('changed scene detail modules use revisioned URLs for returning visitors', 
   const scene = readFileSync(new URL('../dist/scene.js', import.meta.url), 'utf8');
   assert.match(scene, /scene-details\.js\?v=4/);
   assert.match(scene, /focus-details\.js\?v=4/);
+});
+
+test('high-detail preview keeps its photographic stone maps local and web-sized', () => {
+  for (const name of ['rock_01_diff_1k.jpg', 'rock_01_nor_gl_1k.jpg', 'mossy_rock_diff_1k.jpg', 'mossy_rock_nor_gl_1k.jpg']) {
+    const path = new URL(`../dist/assets/materials/${name}`, import.meta.url);
+    assert.ok(existsSync(path), name);
+    assert.ok(statSync(path).size < 2_000_000, name);
+    const bytes = readFileSync(path);
+    assert.equal(bytes[0], 0xff);
+    assert.equal(bytes[1], 0xd8);
+  }
 });
