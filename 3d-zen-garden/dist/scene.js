@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {fountainCycle,limitPixelRatio,pickDestination,createTapTracker} from './garden-math.mjs';
-import {detailGardenSurfaces,addGroundDetails} from './scene-details.js';
+import {detailGardenSurfaces,detailPondWater,addGroundDetails} from './scene-details.js';
 import {addFocusDetails} from './focus-details.js';
 
 const anchors = {
@@ -70,7 +70,8 @@ export async function createGarden({canvas,container,onSelect,onError}) {
   const pond=garden.scene.getObjectByName('PondWater');
   if(pond?.isMesh){
     pond.material.dispose();
-    pond.material=new THREE.MeshPhysicalMaterial({color:0x4e7864,roughness:.19,metalness:.15,clearcoat:1,clearcoatRoughness:.16,transparent:true,opacity:.94});
+    pond.material=new THREE.MeshPhysicalMaterial({color:0x649783,roughness:.16,metalness:.1,clearcoat:1,clearcoatRoughness:.1,transparent:true,opacity:.86,side:THREE.DoubleSide});
+    detailPondWater(pond);
     pond.castShadow=false;
   }
 

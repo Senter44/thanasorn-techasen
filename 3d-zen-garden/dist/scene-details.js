@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import {sampleSurface, rockRelief} from './surface-pattern.mjs';
 
 function randomGenerator(seed) {
   let value = seed >>> 0;
@@ -10,38 +11,32 @@ function randomGenerator(seed) {
 
 function makeSurface(kind) {
   const size = 256;
-  const canvas = document.createElement('canvas');
-  canvas.width = canvas.height = size;
-  const context = canvas.getContext('2d');
-  const image = context.createImageData(size, size);
-  const pixels = image.data;
-  const random = randomGenerator({sand: 17, stone: 29, wood: 41, roof: 53, moss: 67, soil: 79}[kind]);
-
+  const colorCanvas = document.createElement('canvas');
+  const bumpCanvas = document.createElement('canvas');
+  colorCanvas.width = colorCanvas.height = size;
+  bumpCanvas.width = bumpCanvas.height = size;
+  const colorContext = colorCanvas.getContext('2d');
+  const bumpContext = bumpCanvas.getContext('2d');
+  const colorImage = colorContext.createImageData(size, size);
+  const bumpImage = bumpContext.createImageData(size, size);
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {
-      const grain = random() - .5;
-      const broad = Math.sin(x * .115 + Math.sin(y * .028) * 2.3) * .5;
-      const fine = Math.sin(x * .53 + Math.sin(y * .092) * 1.2) * .5;
-      const mottling = Math.sin(x * .041 + y * .067) * Math.cos(y * .048 - x * .023);
-      let shade;
-      if (kind === 'wood' || kind === 'roof') shade = 225 + broad * 20 + fine * 9 + grain * 16;
-      else if (kind === 'sand') shade = 238 + mottling * 4 + grain * 24;
-      else if (kind === 'moss') shade = 226 + mottling * 13 + grain * 28;
-      else if (kind === 'soil') shade = 228 + mottling * 10 + grain * 22;
-      else shade = 228 + mottling * 9 + grain * 25;
+      const {r, g, b, bump} = sampleSurface(kind, x, y);
       const index = (y * size + x) * 4;
-      pixels[index] = shade;
-      pixels[index + 1] = shade;
-      pixels[index + 2] = shade;
-      pixels[index + 3] = 255;
+      colorImage.data.set([r, g, b, 255], index);
+      bumpImage.data.set([bump, bump, bump, 255], index);
     }
   }
-  context.putImageData(image, 0, 0);
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.colorSpace = THREE.SRGBColorSpace;
-  texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-  texture.anisotropy = 4;
-  return texture;
+  colorContext.putImageData(colorImage, 0, 0);
+  bumpContext.putImageData(bumpImage, 0, 0);
+  const color = new THREE.CanvasTexture(colorCanvas);
+  const relief = new THREE.CanvasTexture(bumpCanvas);
+  color.colorSpace = THREE.SRGBColorSpace;
+  for (const texture of [color, relief]) {
+    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+    texture.anisotropy = 4;
+  }
+  return {color, relief};
 }
 
 function surfaceKind(name) {
@@ -59,18 +54,45 @@ function addPlanarUvs(geometry, kind) {
   if (!position) return;
   const uvs = new Float32Array(position.count * 2);
   const grain = kind === 'wood' || kind === 'roof';
+  if (kind === 'water') geometry.computeBoundingBox();
+  const bounds = geometry.boundingBox;
   for (let i = 0; i < position.count; i++) {
     const x = position.getX(i), y = position.getY(i), z = position.getZ(i);
-    uvs[i * 2] = grain ? x * 1.8 + z * .3 : x * 1.5;
-    uvs[i * 2 + 1] = grain ? y * 1.5 + z * 1.1 : z * 1.5;
+    uvs[i * 2] = kind === 'water' ? (x - bounds.min.x) / (bounds.max.x - bounds.min.x || 1) : grain ? x * 1.8 + z * .3 : x * 1.5;
+    uvs[i * 2 + 1] = kind === 'water' ? (z - bounds.min.z) / (bounds.max.z - bounds.min.z || 1) : grain ? y * 1.5 + z * 1.1 : z * 1.5;
   }
   geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+}
+
+function weatherRock(object) {
+  const geometry = object.geometry.clone();
+  const position = geometry.getAttribute('position');
+  if (!position) return;
+  geometry.computeBoundingBox();
+  if (!geometry.getAttribute('normal')) geometry.computeVertexNormals();
+  const normal = geometry.getAttribute('normal');
+  const center = new THREE.Vector3();
+  const extent = new THREE.Vector3();
+  geometry.boundingBox.getCenter(center);
+  geometry.boundingBox.getSize(extent);
+  const amplitude = Math.min(.055, Math.max(extent.x, extent.y, extent.z) * .028);
+  const seed = [...object.name].reduce((value, letter) => value + letter.charCodeAt(0), 0);
+  for (let i = 0; i < position.count; i++) {
+    const x = position.getX(i), y = position.getY(i), z = position.getZ(i);
+    const displacement = rockRelief(x - center.x, y - center.y, z - center.z, seed) * amplitude;
+    position.setXYZ(i, x + normal.getX(i) * displacement, y + normal.getY(i) * displacement, z + normal.getZ(i) * displacement);
+  }
+  position.needsUpdate = true;
+  geometry.computeVertexNormals();
+  geometry.computeBoundingSphere();
+  object.geometry = geometry;
 }
 
 export function detailGardenSurfaces(root) {
   const textures = new Map();
   root.traverse(object => {
     if (!object.isMesh || !object.material) return;
+    if (/ProjectsStandingStone|ProjectsMossCap|JourneySteppingStone|PondEdgeStone|PondMossEdge/.test(object.name)) weatherRock(object);
     const materials = Array.isArray(object.material) ? object.material : [object.material];
     const kind = materials.map(material => surfaceKind(material.name)).find(Boolean);
     if (kind) addPlanarUvs(object.geometry, kind);
@@ -80,9 +102,9 @@ export function detailGardenSurfaces(root) {
       const copy = material.clone();
       if (type) {
         if (!textures.has(type)) textures.set(type, makeSurface(type));
-        copy.map = textures.get(type);
-        copy.bumpMap = textures.get(type);
-        copy.bumpScale = type === 'sand' ? .016 : type === 'wood' || type === 'roof' ? .022 : .035;
+        copy.map = textures.get(type).color;
+        copy.bumpMap = textures.get(type).relief;
+        copy.bumpScale = type === 'sand' ? .012 : type === 'wood' || type === 'roof' ? .025 : type === 'stone' ? .055 : .035;
         copy.roughness = type === 'sand' || type === 'moss' ? 1 : .92;
         if (type === 'sand') copy.color.multiplyScalar(.84);
         if (type === 'moss') copy.color.lerp(new THREE.Color(0x4e7745), .28);
@@ -95,6 +117,15 @@ export function detailGardenSurfaces(root) {
     });
     object.material = Array.isArray(object.material) ? detailed : detailed[0];
   });
+}
+
+export function detailPondWater(pond) {
+  addPlanarUvs(pond.geometry, 'water');
+  const {color, relief} = makeSurface('water');
+  pond.material.map = color;
+  pond.material.bumpMap = relief;
+  pond.material.bumpScale = .016;
+  pond.material.needsUpdate = true;
 }
 
 function openSand(x, z) {

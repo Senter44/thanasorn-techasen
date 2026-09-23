@@ -73,6 +73,46 @@ function ripple(group, x, z, radius) {
   group.add(line);
 }
 
+function lilyPad(group, x, z, radius, turn) {
+  const outline = new THREE.Shape();
+  outline.moveTo(0, 0);
+  for (let i = 0; i <= 28; i++) {
+    const angle = .18 + i / 28 * (Math.PI * 2 - .36);
+    outline.lineTo(Math.cos(angle) * radius, Math.sin(angle) * radius * .84);
+  }
+  outline.closePath();
+  const leaf = new THREE.Mesh(
+    new THREE.ShapeGeometry(outline),
+    new THREE.MeshStandardMaterial({color: 0x587c4b, roughness: .88, side: THREE.DoubleSide}),
+  );
+  leaf.rotation.set(-Math.PI / 2, 0, turn);
+  leaf.position.set(x, .097, z);
+  group.add(leaf);
+  const veins = [];
+  for (let i = 1; i <= 5; i++) {
+    const angle = i * Math.PI * 2 / 6 + .15;
+    veins.push(0, 0, 0, Math.cos(angle) * radius * .78, Math.sin(angle) * radius * .67, 0);
+  }
+  const lines = new THREE.BufferGeometry();
+  lines.setAttribute('position', new THREE.Float32BufferAttribute(veins, 3));
+  const veinsMesh = new THREE.LineSegments(lines, new THREE.LineBasicMaterial({color: 0x95a773, transparent: true, opacity: .55}));
+  veinsMesh.rotation.copy(leaf.rotation);
+  veinsMesh.position.set(x, .101, z);
+  group.add(veinsMesh);
+}
+
+function reeds(group, x, z, count) {
+  for (let i = 0; i < count; i++) {
+    const angle = i * 2.399;
+    const offset = .04 + i * .021;
+    const height = .33 + (i % 3) * .075;
+    const stem = cylinder(group, darkMoss, x + Math.cos(angle) * offset, .05 + height / 2, z + Math.sin(angle) * offset, .008, height, 5);
+    stem.rotation.z = Math.sin(angle) * .14;
+    stem.rotation.x = Math.cos(angle) * .12;
+    cylinder(group, timber, stem.position.x, .09 + height, stem.position.z, .014, .085, 6);
+  }
+}
+
 export function addFocusDetails(scene) {
   // 01: the rock island gains uneven moss, groundcover and weathered small stones.
   const projects = new THREE.Group(); projects.name = 'Focus01_RockIsland';
@@ -110,6 +150,15 @@ export function addFocusDetails(scene) {
   // 05: reeds, a quiet flower and fine water rings enrich the pond without hiding it.
   const pond = new THREE.Group(); pond.name = 'Focus05_Pond';
   for (const [x,z,h] of [[2.46,2.26,.32],[2.61,3.12,.28],[3.16,3.75,.26],[5.61,2.98,.32],[5.2,3.64,.25]]) plant(pond,x,z,h,.13,8,Math.round(z*9));
+  reeds(pond,2.55,2.72,5);
+  reeds(pond,5.38,3.25,4);
+  for (const [x,z,r,turn] of [[4.48,2.15,.18,.2],[4.83,2.02,.145,.9],[5.01,2.37,.16,-.4],[4.3,2.83,.12,.5]]) lilyPad(pond,x,z,r,turn);
+  for (const [x,z,r] of [[3.17,2.82,.075],[3.55,3.08,.06],[4.12,1.98,.055],[4.48,3.16,.07]]) {
+    const submerged = new THREE.Mesh(new THREE.IcosahedronGeometry(1,1),stone);
+    submerged.position.set(x,.046,z);
+    submerged.scale.set(r,.025,r*.75);
+    pond.add(submerged);
+  }
   const flowerX = 3.45, flowerZ = 2.32;
   for (let i = 0; i < 7; i++) {
     const angle = i * Math.PI * 2 / 7;
@@ -122,5 +171,6 @@ export function addFocusDetails(scene) {
   cylinder(pond,moss,flowerX,.112,flowerZ,.055,.035,10);
   ripple(pond,3.45,2.32,.32);
   ripple(pond,4.04,3.04,.23);
+  ripple(pond,4.65,2.28,.34);
   scene.add(pond);
 }
