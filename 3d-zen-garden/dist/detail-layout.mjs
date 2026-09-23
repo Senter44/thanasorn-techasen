@@ -29,6 +29,14 @@ export function roofTilePlan() {
   return tiles;
 }
 
+export function bridgePlankPlan() {
+  return Array.from({length: 11}, (_, index) => ({
+    x: 3.02 + index * .196,
+    y: .19 + .18 * Math.sin(index * Math.PI / 10),
+    z: 3.03,
+  }));
+}
+
 export function scatterEllipse({seed, count, x, z, radiusX, radiusZ, inner = 0}) {
   if (!Number.isInteger(count) || count < 0 || !Number.isFinite(radiusX) || !Number.isFinite(radiusZ) || radiusX <= 0 || radiusZ <= 0 || inner < 0 || inner >= 1) {
     throw new RangeError('Invalid scatter dimensions');

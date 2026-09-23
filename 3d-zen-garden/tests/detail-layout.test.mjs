@@ -42,6 +42,6 @@ test('pond bridge has a low, symmetric arch inside the water footprint', () => {
   assert.equal(planks.length, 11);
   assert.ok(planks.every(plank => plank.x > 2.8 && plank.x < 5.2 && plank.z === 3.03));
   assert.ok(planks.every(plank => plank.y >= .16 && plank.y < .5));
-  assert.equal(planks[0].y, planks.at(-1).y);
+  assert.ok(Math.abs(planks[0].y - planks.at(-1).y) < 1e-10);
   assert.ok(planks[5].y > planks[0].y);
 });

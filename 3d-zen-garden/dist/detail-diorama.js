@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import {gardenGroundcoverPlan, roofTilePlan, scatterEllipse} from './detail-layout.mjs';
+import {bridgePlankPlan, gardenGroundcoverPlan, roofTilePlan, scatterEllipse} from './detail-layout.mjs';
 
 const leafColors = [0x52754b, 0x618257, 0x789366, 0x667b50, 0x597963].map(color => new THREE.Color(color));
 const slateColors = [0x52695d, 0x5d715f, 0x6b7865, 0x4b635b, 0x76816b, 0x586d64, 0x657766].map(color => new THREE.Color(color));
@@ -194,10 +194,46 @@ function addPathGravel(scene) {
   scene.add(group);
 }
 
+function rodBetween(group, name, start, end, radius, material) {
+  const direction = new THREE.Vector3().subVectors(end, start);
+  const rod = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, direction.length(), 7), material);
+  rod.name = name;
+  rod.position.copy(start).add(end).multiplyScalar(.5);
+  rod.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.normalize());
+  rod.castShadow = true;
+  group.add(rod);
+}
+
+function addPondBridge(scene) {
+  const group = new THREE.Group(); group.name = 'DetailedPondBridge';
+  const planks = bridgePlankPlan();
+  const deckWood = new THREE.MeshStandardMaterial({color: 0x736046, roughness: .96});
+  const edgeWood = new THREE.MeshStandardMaterial({color: 0x4c4435, roughness: .94});
+  planks.forEach(({x, y, z}, index) => {
+    const plank = box(group, 'WeatheredBridgePlank', x, y, z, .182, .052, .59, deckWood);
+    plank.rotation.z = index === 0 || index === 10 ? 0 : (planks[index + 1]?.y - planks[index - 1]?.y || 0) * -.23;
+  });
+  for (const side of [-1, 1]) {
+    const z = 3.03 + side * .265;
+    for (let index = 0; index < 10; index++) {
+      const a = planks[index], b = planks[index + 1];
+      rodBetween(group, 'CurvedBridgeStringer', new THREE.Vector3(a.x, a.y - .095, z), new THREE.Vector3(b.x, b.y - .095, z), .032, edgeWood);
+      rodBetween(group, 'LowBridgeRail', new THREE.Vector3(a.x, a.y + .31, z), new THREE.Vector3(b.x, b.y + .31, z), .022, edgeWood);
+    }
+    for (const index of [0, 5, 10]) {
+      const {x, y} = planks[index];
+      cylinder(group, 'BridgeRailPost', x, y + .15, z, .032, .039, .35, edgeWood);
+      cylinder(group, 'BridgePostCap', x, y + .34, z, .05, .05, .035, brass);
+    }
+  }
+  scene.add(group);
+}
+
 export function addDetailedDiorama(scene) {
   addRoof(scene);
   addPavilionJoinery(scene);
   addGroundcover(scene);
   addBambooThicket(scene);
   addPathGravel(scene);
+  addPondBridge(scene);
 }
