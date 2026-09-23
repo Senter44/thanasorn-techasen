@@ -3,6 +3,7 @@ import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {fountainCycle,limitPixelRatio,pickDestination,createTapTracker} from './garden-math.mjs';
 import {detailGardenSurfaces,addGroundDetails} from './scene-details.js';
+import {addFocusDetails} from './focus-details.js';
 
 const anchors = {
   toolkit:new THREE.Vector3(-4,2.2,-2),
@@ -17,7 +18,7 @@ export async function createGarden({canvas,container,onSelect,onError}) {
   renderer.setClearColor(0x000000,0);
   renderer.outputColorSpace=THREE.SRGBColorSpace;
   renderer.toneMapping=THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure=1.08;
+  renderer.toneMappingExposure=1.02;
   renderer.shadowMap.enabled=true;
   renderer.shadowMap.type=THREE.PCFShadowMap;
   renderer.shadowMap.autoUpdate=false;
@@ -33,8 +34,8 @@ export async function createGarden({canvas,container,onSelect,onError}) {
   controls.maxPolarAngle=1.15;
   controls.minAzimuthAngle=-.6;
   controls.maxAzimuthAngle=1.05;
-  scene.add(new THREE.HemisphereLight(0xe4e7d6,0x46594e,1.35));
-  const sunlight=new THREE.DirectionalLight(0xffead0,2.45);
+  scene.add(new THREE.HemisphereLight(0xdce8d9,0x3e5846,1.4));
+  const sunlight=new THREE.DirectionalLight(0xf1efd9,2.25);
   sunlight.position.set(-7,15,7);
   sunlight.castShadow=true;
   sunlight.shadow.mapSize.setScalar(innerWidth<700?1024:2048);
@@ -42,7 +43,7 @@ export async function createGarden({canvas,container,onSelect,onError}) {
   sunlight.shadow.bias=-.0005;
   sunlight.shadow.normalBias=.018;
   scene.add(sunlight);
-  const fillLight=new THREE.DirectionalLight(0xc8dddc,.4);
+  const fillLight=new THREE.DirectionalLight(0xb7d2bd,.48);
   fillLight.position.set(8,5,-6);scene.add(fillLight);
   const shadowFloor=new THREE.Mesh(new THREE.PlaneGeometry(200,200),new THREE.ShadowMaterial({opacity:.19}));
   shadowFloor.rotation.x=-Math.PI/2;shadowFloor.position.y=-.8;shadowFloor.receiveShadow=true;scene.add(shadowFloor);
@@ -65,10 +66,11 @@ export async function createGarden({canvas,container,onSelect,onError}) {
   });
   scene.add(garden.scene);
   addGroundDetails(scene);
+  addFocusDetails(scene);
   const pond=garden.scene.getObjectByName('PondWater');
   if(pond?.isMesh){
     pond.material.dispose();
-    pond.material=new THREE.MeshPhysicalMaterial({color:0x618a79,roughness:.19,metalness:.15,clearcoat:1,clearcoatRoughness:.16,transparent:true,opacity:.94});
+    pond.material=new THREE.MeshPhysicalMaterial({color:0x4e7864,roughness:.19,metalness:.15,clearcoat:1,clearcoatRoughness:.16,transparent:true,opacity:.94});
     pond.castShadow=false;
   }
 
@@ -87,10 +89,10 @@ export async function createGarden({canvas,container,onSelect,onError}) {
   scene.add(bambooRoot);
   const outlet=new THREE.Object3D();outlet.position.set(-3.4425,0,4.05);bamboo?.add(outlet);
   const feeder=new THREE.Object3D();feeder.position.set(26.984942,18,-43.425182);bambooRoot.add(feeder);
-  const stoneMaterial=new THREE.MeshStandardMaterial({color:0x737b69,roughness:.95});
+  const stoneMaterial=new THREE.MeshStandardMaterial({color:0x68796a,roughness:.95});
   const basin=new THREE.Mesh(new THREE.TorusGeometry(.92,.18,12,48),stoneMaterial);
   basin.rotation.x=Math.PI/2;basin.position.set(-4.95,.23,2.7);basin.castShadow=true;basin.receiveShadow=true;scene.add(basin);
-  const basinWater=new THREE.Mesh(new THREE.CircleGeometry(.89,40),new THREE.MeshPhysicalMaterial({color:0x678e83,roughness:.16,metalness:.2,clearcoat:1}));
+  const basinWater=new THREE.Mesh(new THREE.CircleGeometry(.89,40),new THREE.MeshPhysicalMaterial({color:0x567f6e,roughness:.16,metalness:.2,clearcoat:1}));
   basinWater.rotation.x=-Math.PI/2;basinWater.position.copy(basin.position);basinWater.position.y=.2;scene.add(basinWater);
   const waterMaterial=new THREE.MeshPhysicalMaterial({color:0xc4e4df,roughness:.08,metalness:0,transparent:true,opacity:.57,clearcoat:1,side:THREE.DoubleSide,depthWrite:false});
   function makeStream(){

@@ -84,10 +84,11 @@ export function detailGardenSurfaces(root) {
         copy.bumpMap = textures.get(type);
         copy.bumpScale = type === 'sand' ? .016 : type === 'wood' || type === 'roof' ? .022 : .035;
         copy.roughness = type === 'sand' || type === 'moss' ? 1 : .92;
-        if (type === 'sand') copy.color.multiplyScalar(.86);
+        if (type === 'sand') copy.color.multiplyScalar(.84);
+        if (type === 'moss') copy.color.lerp(new THREE.Color(0x4e7745), .28);
         copy.needsUpdate = true;
       } else if (/foliage/i.test(material.name)) {
-        copy.color.multiplyScalar(.83);
+        copy.color.lerp(new THREE.Color(0x567c4c), .24).multiplyScalar(.87);
         copy.roughness = .9;
       }
       return copy;
