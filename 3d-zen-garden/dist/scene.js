@@ -2,8 +2,8 @@ import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {fountainCycle,limitPixelRatio,pickDestination,createTapTracker} from './garden-math.mjs';
-import {detailGardenSurfaces,detailPondWater,addGroundDetails} from './scene-details.js';
-import {addFocusDetails} from './focus-details.js';
+import {detailGardenSurfaces,detailPondWater,addGroundDetails} from './scene-details.js?v=4';
+import {addFocusDetails} from './focus-details.js?v=4';
 
 const anchors = {
   toolkit:new THREE.Vector3(-4,2.2,-2),
