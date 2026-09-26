@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&family=Noto+Serif+Thai:wght@400;500;600&display=swap');
 
-.heading-controls { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.heading-controls { display: flex; flex-direction: column; align-items: stretch; gap: 10px; flex-shrink: 0; width: max-content; }
 .language-switch {
   display: flex;
   flex-direction: column;
@@ -51,7 +51,7 @@ html[lang='th'] .eyebrow { letter-spacing: .3px; }
   .heading-controls { gap: 8px; }
 }
 @media (max-width: 520px) {
-  .heading-controls { margin-top: 16px; flex-wrap: wrap; }
+  .heading-controls { margin-top: 16px; }
   .heading-controls .view-switch { margin-top: 0; }
   .language-field select { min-height: 37px; }
   html[lang='th'] .garden-heading h1 { font-size: 30px; }
