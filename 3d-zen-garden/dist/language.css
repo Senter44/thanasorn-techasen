@@ -4,24 +4,29 @@
 .language-switch {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  padding: 4px;
+  gap: 8px;
+  padding: 4px 5px 4px 12px;
   border: 1px solid #bfc5b0;
   border-radius: 30px;
   background: #f3f0e780;
 }
-.language-switch button {
-  min-width: 43px;
+.language-switch label { font-size: 11px; font-weight: 600; color: var(--ink); cursor: pointer; }
+.language-switch select {
   min-height: 31px;
-  padding: 5px 10px;
+  padding: 5px 8px;
+  border: 0;
   border-radius: 24px;
-  background: transparent;
+  background: var(--ink);
+  color: #faf8ee;
+  font: inherit;
   font-size: 13px;
-  line-height: 1;
+  cursor: pointer;
 }
-.language-switch button[aria-pressed='true'] { background: var(--ink); color: #faf8ee; }
+.language-switch select:focus-visible { outline: 2px solid #679153; outline-offset: 2px; }
+.language-switch option { background: #f7f4e9; color: #1c2f22; }
 [data-theme='dark'] .language-switch { background: #1b2a22; border-color: #506653; }
-[data-theme='dark'] .language-switch button[aria-pressed='true'] { background: #c5d7b3; color: #17251b; }
+[data-theme='dark'] .language-switch select { background: #c5d7b3; color: #17251b; }
+[data-theme='dark'] .language-switch option { background: #1b2a22; color: #faf8ee; }
 
 html[lang='th'] {
   --serif: 'Noto Serif Thai', Georgia, serif;
@@ -46,7 +51,7 @@ html[lang='th'] .eyebrow { letter-spacing: .3px; }
 @media (max-width: 520px) {
   .heading-controls { margin-top: 16px; flex-wrap: wrap; }
   .heading-controls .view-switch { margin-top: 0; }
-  .language-switch button { min-height: 30px; }
+  .language-switch select { min-height: 30px; }
   html[lang='th'] .garden-heading h1 { font-size: 30px; }
   html[lang='th'] .destination-nav button { font-size: 13px; }
   html[lang='th'] .site-header { gap: 8px; padding-inline: 4%; }

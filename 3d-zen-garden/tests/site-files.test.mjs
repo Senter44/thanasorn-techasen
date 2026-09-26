@@ -33,6 +33,7 @@ test('language selector lists English and Thai and can grow with more options', 
   assert.match(html, /<option value="en"[^>]*>English<\/option>/);
   assert.match(html, /<option value="th"[^>]*>ไทย<\/option>/);
   assert.match(html, /src="\.\/language-init\.js\?v=1"/);
+  assert.match(html, /href="\.\/language\.css\?v=2"/);
   const main = readFileSync(new URL('../dist/main.js', import.meta.url), 'utf8');
   assert.match(main, /i18n\.mjs/);
   assert.match(main, /languageSelect\.addEventListener\('change'/);
@@ -66,7 +67,7 @@ test('changed scene detail modules use revisioned URLs for returning visitors', 
   assert.match(scene, /detail-diorama\.js\?v=2/);
   assert.match(diorama, /detail-layout\.mjs\?v=2/);
   assert.match(main, /scene\.js\?v=6/);
-  assert.match(html, /main\.js\?v=three-8/);
+  assert.match(html, /main\.js\?v=three-9/);
 });
 
 test('high-detail preview keeps its photographic stone maps local and web-sized', () => {

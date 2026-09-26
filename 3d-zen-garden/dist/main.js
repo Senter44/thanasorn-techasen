@@ -2,6 +2,7 @@ import {createState, navigate, setView, toggleMotion, shouldAnimate} from './gar
 import {resolveTheme, toggleTheme, themeButtonLabel} from './theme-state.mjs?v=1';
 import {resolveLanguage, translateText, hasThaiTranslation} from './i18n.mjs?v=1';
 const $ = selector => document.querySelector(selector);
+const languageSelect = $('#language-select');
 let language = resolveLanguage(document.documentElement.lang, navigator.language);
 const originalTitle = document.title;
 const description = $('meta[name="description"]');
@@ -27,8 +28,7 @@ function applyLanguage(next) {
   description.content = localized(originalDescription);
   for (const [node, original] of textNodes) node.nodeValue = localized(original);
   for (const [element, name, original] of attributes) element.setAttribute(name, localized(original));
-  $('#lang-en').setAttribute('aria-pressed', String(next === 'en'));
-  $('#lang-th').setAttribute('aria-pressed', String(next === 'th'));
+  languageSelect.value = next;
   applyTheme(document.documentElement.dataset.theme);
   syncMotion();
   if (dialog.open) {
@@ -67,12 +67,10 @@ const places = {
   contact: {title:'Let’s connect.', location:'05 / BY THE POND'},
 };
 applyLanguage(language);
-for (const code of ['en', 'th']) {
-  $(`#lang-${code}`).addEventListener('click', () => {
-    applyLanguage(code);
-    try { localStorage.setItem('garden-language', code); } catch { /* Switching still works without storage. */ }
-  });
-}
+languageSelect.addEventListener('change', () => {
+  applyLanguage(languageSelect.value);
+  try { localStorage.setItem('garden-language', language); } catch { /* Switching still works without storage. */ }
+});
 function syncMotion() {
   const bounds = gardenMap.getBoundingClientRect();
   const visible = !document.hidden && bounds.bottom > 0 && bounds.top < innerHeight;

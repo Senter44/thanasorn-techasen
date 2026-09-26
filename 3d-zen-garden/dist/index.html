@@ -7,15 +7,15 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='8' fill='%23111c20'/%3E%3Cpath d='M9 12h22M20 12v19' stroke='%23c6daac' stroke-width='4'/%3E%3C/svg%3E">
   <script src="./theme-init.js?v=1"></script>
   <script src="./language-init.js?v=1"></script>
-  <link rel="stylesheet" href="./garden.css?v=2"><link rel="stylesheet" href="./three-garden.css?v=3"><link rel="stylesheet" href="./theme.css?v=1"><link rel="stylesheet" href="./language.css?v=1">
+  <link rel="stylesheet" href="./garden.css?v=2"><link rel="stylesheet" href="./three-garden.css?v=3"><link rel="stylesheet" href="./theme.css?v=1"><link rel="stylesheet" href="./language.css?v=2">
   <script type="importmap">{"imports":{"three":"./vendor/three.module.js","three/addons/":"./vendor/addons/"}}</script>
-  <script type="module" src="./main.js?v=three-8"></script>
+  <script type="module" src="./main.js?v=three-9"></script>
 </head>
 <body>
   <a class="skip-link" href="#destinations">Skip to portfolio navigation</a>
   <header class="site-header"><a class="identity" href="./" aria-label="Thanasorn Techasen, home"><span class="monogram" aria-hidden="true">tt.</span><span>Thanasorn Techasen<small>Backend & cloud engineer</small></span></a><div class="header-actions"><span class="location">BANGKOK, THAILAND</span><button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch to dark mode"><span id="theme-button-label" aria-hidden="true">Dark</span></button><button type="button" class="quiet-button" data-open="contact">Let’s talk ↗</button></div></header>
   <main>
-    <div class="garden-heading"><div><p class="eyebrow">AN EXPLORABLE 3D PORTFOLIO</p><h1>A garden of <em>possibilities.</em></h1></div><div class="heading-controls"><div id="language-toggle" class="language-switch" role="group" aria-label="Language"><button id="lang-en" type="button" aria-pressed="true" lang="en">EN</button><button id="lang-th" type="button" aria-pressed="false" lang="th">ไทย</button></div><div class="view-switch" role="group" aria-label="Portfolio view"><button id="map-view" type="button" aria-pressed="true">3D garden</button><button id="list-view" type="button" aria-pressed="false">Quick view</button></div></div></div>
+    <div class="garden-heading"><div><p class="eyebrow">AN EXPLORABLE 3D PORTFOLIO</p><h1>A garden of <em>possibilities.</em></h1></div><div class="heading-controls"><div class="language-switch"><label for="language-select">Language</label><select id="language-select"><option value="en" lang="en">English</option><option value="th" lang="th">ไทย</option></select></div><div class="view-switch" role="group" aria-label="Portfolio view"><button id="map-view" type="button" aria-pressed="true">3D garden</button><button id="list-view" type="button" aria-pressed="false">Quick view</button></div></div></div>
     <section id="garden-map" class="garden-map" aria-label="Interactive portfolio garden">
       <img class="map-art" src="./assets/zen-map-v1.png" alt="A Japanese garden with a wooden pavilion, stepping-stone path, rock islands, a moss clearing, and a pond." width="1536" height="1024" fetchpriority="high">
       <canvas id="garden-canvas" tabindex="0" aria-label="3D zen garden. Drag to rotate, scroll to zoom. Arrow keys rotate, plus and minus zoom, Home resets. Use the labeled buttons to explore portfolio sections."></canvas>
