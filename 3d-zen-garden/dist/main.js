@@ -1,11 +1,47 @@
 import {createState, navigate, setView, toggleMotion, shouldAnimate} from './garden-state.mjs';
 import {resolveTheme, toggleTheme, themeButtonLabel} from './theme-state.mjs?v=1';
+import {resolveLanguage, translateText, hasThaiTranslation} from './i18n.mjs?v=1';
 const $ = selector => document.querySelector(selector);
+let language = resolveLanguage(document.documentElement.lang, navigator.language);
+const originalTitle = document.title;
+const description = $('meta[name="description"]');
+const originalDescription = description.content;
+const textNodes = [];
+const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+while (walker.nextNode()) {
+  const node = walker.currentNode;
+  if (hasThaiTranslation(node.nodeValue)) textNodes.push([node, node.nodeValue]);
+}
+const attributes = [];
+for (const element of document.querySelectorAll('[aria-label], [alt], [title]')) {
+  for (const name of ['aria-label', 'alt', 'title']) {
+    const original = element.getAttribute(name);
+    if (original && hasThaiTranslation(original)) attributes.push([element, name, original]);
+  }
+}
+const localized = source => translateText(source, language);
+function applyLanguage(next) {
+  language = next;
+  document.documentElement.lang = next;
+  document.title = localized(originalTitle);
+  description.content = localized(originalDescription);
+  for (const [node, original] of textNodes) node.nodeValue = localized(original);
+  for (const [element, name, original] of attributes) element.setAttribute(name, localized(original));
+  $('#lang-en').setAttribute('aria-pressed', String(next === 'en'));
+  $('#lang-th').setAttribute('aria-pressed', String(next === 'th'));
+  applyTheme(document.documentElement.dataset.theme);
+  syncMotion();
+  if (dialog.open) {
+    $('#detail-title').textContent = localized(places[state.place].title);
+    $('#detail-location').textContent = localized(places[state.place].location);
+  }
+  if (gardenMap.classList.contains('scene-failed')) $('#scene-status').textContent = localized(sceneFailureMessage);
+}
 const themeButton = $('#theme-toggle');
 function applyTheme(theme) {
   document.documentElement.dataset.theme = theme;
-  themeButton.setAttribute('aria-label', themeButtonLabel(theme));
-  $('#theme-button-label').textContent = theme === 'dark' ? 'Light' : 'Dark';
+  themeButton.setAttribute('aria-label', localized(themeButtonLabel(theme)));
+  $('#theme-button-label').textContent = localized(theme === 'dark' ? 'Light' : 'Dark');
   $('meta[name="theme-color"]').content = theme === 'dark' ? '#101a17' : '#eae7dc';
 }
 applyTheme(resolveTheme(document.documentElement.dataset.theme, matchMedia('(prefers-color-scheme: dark)').matches));
@@ -22,6 +58,7 @@ const motionButton = $('#garden-motion');
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 let state = createState(reducedMotion.matches);
 let opener = null;
+const sceneFailureMessage = 'The 3D garden could not load on this device. You can still explore everything using Quick view or the navigation below.';
 const places = {
   projects: {title:'Selected work.', location:'01 / THE ROCK ISLANDS'},
   experience: {title:'The path so far.', location:'02 / THE STEPPING STONES'},
@@ -29,20 +66,27 @@ const places = {
   toolkit: {title:'My toolkit.', location:'04 / THE PAVILION'},
   contact: {title:'Let’s connect.', location:'05 / BY THE POND'},
 };
+applyLanguage(language);
+for (const code of ['en', 'th']) {
+  $(`#lang-${code}`).addEventListener('click', () => {
+    applyLanguage(code);
+    try { localStorage.setItem('garden-language', code); } catch { /* Switching still works without storage. */ }
+  });
+}
 function syncMotion() {
   const bounds = gardenMap.getBoundingClientRect();
   const visible = !document.hidden && bounds.bottom > 0 && bounds.top < innerHeight;
   garden?.setActive(shouldAnimate(state, visible) && !physicsDialog.open);
   motionButton.setAttribute('aria-pressed', String(state.paused));
-  $('#garden-motion-label').textContent = state.paused ? 'Play motion' : 'Pause motion';
+  $('#garden-motion-label').textContent = localized(state.paused ? 'Play motion' : 'Pause motion');
 }
 function openPlace(place, trigger) {
   if (!places[place]) return;
   state = navigate(state, place);
   opener = trigger;
   garden?.focus(place, !state.paused && !reducedMotion.matches);
-  $('#detail-title').textContent = places[place].title;
-  $('#detail-location').textContent = places[place].location;
+  $('#detail-title').textContent = localized(places[place].title);
+  $('#detail-location').textContent = localized(places[place].location);
   $('#panel-number').textContent = `${Object.keys(places).indexOf(place) + 1} / 5`;
   document.querySelectorAll('[data-panel]').forEach(panel => { panel.hidden = panel.dataset.panel !== place; });
   dialog.showModal();
@@ -105,7 +149,7 @@ function showSceneError(error) {
   gardenMap.classList.remove('scene-loading');
   gardenMap.classList.add('scene-failed');
   $('#scene-status').hidden = false;
-  $('#scene-status').textContent = 'The 3D garden could not load on this device. You can still explore everything using Quick view or the navigation below.';
+  $('#scene-status').textContent = localized(sceneFailureMessage);
   console.error('Garden rendering failed:', error);
 }
 gardenMap.classList.add('scene-loading');

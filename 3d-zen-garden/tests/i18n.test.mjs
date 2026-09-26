@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {resolveLanguage, toggleLanguage, translateText} from '../dist/i18n.mjs';
+import {resolveLanguage, toggleLanguage, translateText, hasThaiTranslation} from '../dist/i18n.mjs';
 
 test('saved language wins, with Thai browser language as fallback', () => {
   assert.equal(resolveLanguage('en', 'th-TH'), 'en');
@@ -28,4 +28,7 @@ test('Thai copy covers the page, destinations, and detail text', () => {
     assert.equal(translateText(source, 'en'), source);
   }
   assert.equal(translateText('  Selected work  ', 'th').trim(), translateText('Selected work', 'th'));
+  assert.equal(hasThaiTranslation('Selected work'), true);
+  assert.equal(hasThaiTranslation('TypeScript'), false);
+  assert.equal(translateText('TypeScript', 'th'), 'TypeScript');
 });

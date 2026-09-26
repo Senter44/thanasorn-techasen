@@ -1,0 +1,62 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&family=Noto+Serif+Thai:wght@400;500;600&display=swap');
+
+.heading-controls { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.language-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px;
+  border: 1px solid #bfc5b0;
+  border-radius: 30px;
+  background: #f3f0e780;
+}
+.language-switch button {
+  min-width: 43px;
+  min-height: 31px;
+  padding: 5px 10px;
+  border-radius: 24px;
+  background: transparent;
+  font-size: 13px;
+  line-height: 1;
+}
+.language-switch button[aria-pressed='true'] { background: var(--ink); color: #faf8ee; }
+[data-theme='dark'] .language-switch { background: #1b2a22; border-color: #506653; }
+[data-theme='dark'] .language-switch button[aria-pressed='true'] { background: #c5d7b3; color: #17251b; }
+
+html[lang='th'] {
+  --serif: 'Noto Serif Thai', Georgia, serif;
+  --sans: 'Noto Sans Thai', Tahoma, sans-serif;
+}
+html[lang='th'] h1,
+html[lang='th'] h2,
+html[lang='th'] .detail-content h3,
+html[lang='th'] .card-caption strong { letter-spacing: 0; line-height: 1.45; }
+html[lang='th'] h1 { font-size: 34px; }
+html[lang='th'] h1 em { display: block; }
+html[lang='th'] h2 { font-size: 41px; }
+html[lang='th'] .detail-content h3 { font-size: 27px; }
+html[lang='th'] .card-caption strong { font-size: 24px; }
+html[lang='th'] .place-label strong { font-size: 13px; }
+html[lang='th'] .location,
+html[lang='th'] .eyebrow { letter-spacing: .3px; }
+
+@media (max-width: 800px) {
+  .heading-controls { gap: 8px; }
+}
+@media (max-width: 520px) {
+  .heading-controls { margin-top: 16px; flex-wrap: wrap; }
+  .heading-controls .view-switch { margin-top: 0; }
+  .language-switch button { min-height: 30px; }
+  html[lang='th'] .garden-heading h1 { font-size: 30px; }
+  html[lang='th'] .destination-nav button { font-size: 13px; }
+  html[lang='th'] .site-header { gap: 8px; padding-inline: 4%; }
+  html[lang='th'] .identity { gap: 7px; font-size: 12px; }
+  html[lang='th'] .identity small { font-size: 10px; }
+  html[lang='th'] .monogram { font-size: 35px; }
+  html[lang='th'] .header-actions { flex-shrink: 0; gap: 6px; }
+  html[lang='th'] .quiet-button { white-space: nowrap; font-size: 11px; }
+  html[lang='th'] .theme-toggle { padding-inline: 6px; font-size: 11px; }
+}
+@media (max-width: 360px) {
+  html[lang='th'] .garden-heading h1 { font-size: 27px; }
+}
