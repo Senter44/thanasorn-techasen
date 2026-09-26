@@ -20,6 +20,13 @@ test('CV and contact stay available without map discovery', () => {
   assert.match(html, /href="https:\/\/github.com\/Senter44"/);
   assert.ok(existsSync(new URL('../dist/assets/thanasorn-techasen-cv.pdf', import.meta.url)));
 });
+test('light and dark modes are available without changing the 3D scene', () => {
+  assert.match(html, /id="theme-toggle"/);
+  assert.match(html, /src="\.\/theme-init\.js\?v=1"/);
+  assert.match(html, /href="\.\/theme\.css\?v=1"/);
+  const main = readFileSync(new URL('../dist/main.js', import.meta.url), 'utf8');
+  assert.match(main, /theme-state\.mjs/);
+});
 test('the complete Three.js import graph is vendored locally',()=>{
   const root=new URL('../dist/',import.meta.url);
   const seen=new Set();
