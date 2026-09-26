@@ -1,10 +1,12 @@
+export const WIND_GUST_STRENGTH = 0.58;
+
 const windVertex = `#include <begin_vertex>
-  float crown = smoothstep(1.25, 3.7, position.y);
+  float crown = smoothstep(1.2, 2.7, position.y);
   float gust = max(0.0, sin(treeWindTime * 0.9 - position.x * 0.55 + position.z * 0.18));
   gust *= gust * gust;
   float sway = sin(treeWindTime * 1.25 - position.x * 0.45 + position.z * 0.3);
-  transformed.x += crown * (0.045 * sway + 0.17 * gust);
-  transformed.z += crown * 0.035 * sin(treeWindTime * 1.05 - position.x * 0.52);`;
+  transformed.x += crown * (0.11 * sway + ${WIND_GUST_STRENGTH} * gust);
+  transformed.z += crown * 0.09 * sin(treeWindTime * 1.05 - position.x * 0.52);`;
 
 function addWindToMaterial(material, uniform) {
   const original = material.onBeforeCompile;

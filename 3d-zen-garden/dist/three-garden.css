@@ -12,3 +12,10 @@
 .place-label small{display:none}
 .scene-controls button,.scene-controls>span{font-size:14px}
 @media(max-width:700px){.place-label{display:none}.place{width:44px;height:44px;padding:8px}.map-pin{width:28px;height:28px}.scene-controls button{font-size:13px}}
+
+/* Keep the map markers visible; reveal their descriptions only when explored. */
+.place{display:grid;place-items:center;width:44px;height:44px;min-width:44px;min-height:44px;padding:0}
+.place-label{position:absolute;left:calc(100% + 5px);top:50%;transform:translateY(-50%);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s ease,visibility .2s ease}
+.place:hover .place-label,.place:focus-visible .place-label,.place.is-hovered .place-label{opacity:1;visibility:visible}
+@media(hover:none) and (min-width:701px){.place-label{opacity:1;visibility:visible}}
+@media(max-width:700px){.place{padding:0}.place:focus-visible .place-label{display:block}}

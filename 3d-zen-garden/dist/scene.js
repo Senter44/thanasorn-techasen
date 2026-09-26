@@ -6,7 +6,8 @@ import {detailGardenSurfaces,detailPondWater,addGroundDetails} from './scene-det
 import {addFocusDetails} from './focus-details.js?v=4';
 import {addDetailedDiorama} from './detail-diorama.js?v=2';
 import {applyPhotographicStone} from './photo-materials.js';
-import {installTreeWind} from './tree-wind.mjs?v=1';
+import {installTreeWind} from './tree-wind.mjs?v=2';
+import {windLeafPose,WIND_LEAF_COUNT} from './wind-leaves.mjs?v=1';
 
 const anchors = {
   toolkit:new THREE.Vector3(-4,2.2,-2),
@@ -78,6 +79,17 @@ export async function createGarden({canvas,container,onSelect,onError}) {
   addGroundDetails(scene);
   addFocusDetails(scene);
   addDetailedDiorama(scene);
+  const leafCloud=new THREE.InstancedMesh(
+    new THREE.SphereGeometry(1,6,4),
+    new THREE.MeshBasicMaterial({color:0xffffff,side:THREE.DoubleSide}),
+    WIND_LEAF_COUNT,
+  );
+  const leafDummy=new THREE.Object3D();
+  const leafColors=[0x73935d,0x94aa6a,0xb0a96b,0x69865a];
+  for(let i=0;i<WIND_LEAF_COUNT;i++)leafCloud.setColorAt(i,new THREE.Color(leafColors[i%leafColors.length]));
+  leafCloud.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  leafCloud.frustumCulled=false;
+  scene.add(leafCloud);
   const pond=garden.scene.getObjectByName('PondWater');
   if(pond?.isMesh){
     pond.material.dispose();
@@ -176,6 +188,15 @@ export async function createGarden({canvas,container,onSelect,onError}) {
     }
     if(active||needsRender){
       treeWind?.setTime(elapsed);
+      for(let i=0;i<WIND_LEAF_COUNT;i++){
+        const pose=windLeafPose(i,elapsed);
+        leafDummy.position.set(pose.x,pose.y,pose.z);
+        leafDummy.rotation.set(Math.sin(pose.angle)*.5,pose.angle,Math.cos(pose.angle)*.7);
+        leafDummy.scale.set(.2+(i%3)*.02,.018,.09);
+        leafDummy.updateMatrix();
+        leafCloud.setMatrixAt(i,leafDummy.matrix);
+      }
+      leafCloud.instanceMatrix.needsUpdate=true;
       const cycle=fountainCycle(elapsed);pivot.rotation.y=cycle.angle;bambooRoot.updateMatrixWorld(true);
       outlet.getWorldPosition(mouth);feeder.getWorldPosition(start);
       end.set(start.x,Math.max(.35,mouth.y+.04),start.z);

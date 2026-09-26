@@ -151,7 +151,7 @@ function showSceneError(error) {
   console.error('Garden rendering failed:', error);
 }
 gardenMap.classList.add('scene-loading');
-import('./scene.js?v=7').then(async ({createGarden}) => {
+import('./scene.js?v=8').then(async ({createGarden}) => {
   garden = await createGarden({canvas:$('#garden-canvas'),container:gardenMap,onSelect:place=>openPlace(place,document.querySelector(`.place[data-open="${place}"]`)),onError:showSceneError});
   gardenMap.classList.remove('scene-loading');
   gardenMap.classList.add('scene-ready');
