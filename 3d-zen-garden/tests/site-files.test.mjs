@@ -81,7 +81,7 @@ test('changed scene detail modules use revisioned URLs for returning visitors', 
   assert.match(diorama, /detail-layout\.mjs\?v=2/);
   assert.match(main, /scene\.js\?v=7/);
   assert.match(scene, /tree-wind\.mjs\?v=1/);
-  assert.match(html, /main\.js\?v=three-9/);
+  assert.match(html, /main\.js\?v=three-10/);
 });
 
 test('high-detail preview keeps its photographic stone maps local and web-sized', () => {

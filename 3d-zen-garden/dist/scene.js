@@ -6,6 +6,7 @@ import {detailGardenSurfaces,detailPondWater,addGroundDetails} from './scene-det
 import {addFocusDetails} from './focus-details.js?v=4';
 import {addDetailedDiorama} from './detail-diorama.js?v=2';
 import {applyPhotographicStone} from './photo-materials.js';
+import {installTreeWind} from './tree-wind.mjs?v=1';
 
 const anchors = {
   toolkit:new THREE.Vector3(-4,2.2,-2),
@@ -59,6 +60,8 @@ export async function createGarden({canvas,container,onSelect,onError}) {
   }
   const selectable=[];
   detailGardenSurfaces(garden.scene);
+  const canopy=garden.scene.getObjectByName('Perimeter_Japanese_foliage_00');
+  const treeWind=canopy?.isMesh?installTreeWind(canopy,new THREE.MeshDepthMaterial({side:THREE.DoubleSide})):null;
   try {
     await applyPhotographicStone(garden.scene);
   } catch (error) {
@@ -172,6 +175,7 @@ export async function createGarden({canvas,container,onSelect,onError}) {
       needsRender=true;
     }
     if(active||needsRender){
+      treeWind?.setTime(elapsed);
       const cycle=fountainCycle(elapsed);pivot.rotation.y=cycle.angle;bambooRoot.updateMatrixWorld(true);
       outlet.getWorldPosition(mouth);feeder.getWorldPosition(start);
       end.set(start.x,Math.max(.35,mouth.y+.04),start.z);
@@ -215,6 +219,6 @@ export async function createGarden({canvas,container,onSelect,onError}) {
     setActive(value){if(!alive||failed)return;active=value;last=0;needsRender=true;schedule();},
     reset,
     focus(place,animate=true){const anchor=anchors[place];if(!anchor||!alive||failed)return;const target=anchor.clone().multiplyScalar(.5);const to=target.clone().add(new THREE.Vector3(8.5,10.5,14.5));if(animate){transition={start:performance.now(),from:camera.position.clone(),to,targetFrom:controls.target.clone(),targetTo:target};}else{transition=null;camera.position.copy(to);controls.target.copy(target);needsRender=true;}schedule();},
-    dispose(){alive=false;cancelAnimationFrame(frame);observer.disconnect();visibilityObserver.disconnect();document.removeEventListener('visibilitychange',onVisibility);controls.dispose();const geometries=new Set(),materials=new Set(),textures=new Set();scene.traverse(object=>{if(object.geometry)geometries.add(object.geometry);for(const material of Array.isArray(object.material)?object.material:object.material?[object.material]:[]){materials.add(material);for(const value of Object.values(material))if(value?.isTexture)textures.add(value);}});geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());textures.forEach(t=>t.dispose());renderer.dispose();},
+    dispose(){alive=false;cancelAnimationFrame(frame);observer.disconnect();visibilityObserver.disconnect();document.removeEventListener('visibilitychange',onVisibility);controls.dispose();const geometries=new Set(),materials=new Set(),textures=new Set();scene.traverse(object=>{if(object.geometry)geometries.add(object.geometry);for(const material of [...(Array.isArray(object.material)?object.material:object.material?[object.material]:[]),...(object.customDepthMaterial?[object.customDepthMaterial]:[])]){materials.add(material);for(const value of Object.values(material))if(value?.isTexture)textures.add(value);}});geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());textures.forEach(t=>t.dispose());renderer.dispose();},
   };
 }

@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {installTreeWind} from '../dist/tree-wind.mjs';
 
 function compile(material) {
@@ -29,4 +30,13 @@ test('wind passes across each tree crown and updates its shadow with one shared 
 test('missing foliage leaves the garden unchanged', () => {
   assert.equal(installTreeWind(null, {}), null);
   assert.equal(installTreeWind({isMesh: false}, {}), null);
+});
+
+test('shipped garden model contains the canopy that receives wind', () => {
+  const model = readFileSync(new URL('../dist/assets/garden.glb', import.meta.url));
+  const jsonLength = model.readUInt32LE(12);
+  const gltf = JSON.parse(model.subarray(20, 20 + jsonLength).toString());
+  const canopy = gltf.nodes.find(node => node.name === 'Perimeter_Japanese_foliage_00');
+  assert.ok(Number.isInteger(canopy?.mesh));
+  assert.ok(gltf.meshes[canopy.mesh].primitives.length >= 2);
 });
