@@ -2,30 +2,32 @@
 
 .heading-controls { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
 .language-switch {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 5px 4px 12px;
-  border: 1px solid #bfc5b0;
-  border-radius: 30px;
-  background: #f3f0e780;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 5px;
 }
-.language-switch label { font-size: 11px; font-weight: 600; color: var(--ink); cursor: pointer; }
-.language-switch select {
-  min-height: 31px;
-  padding: 5px 8px;
-  border: 0;
-  border-radius: 24px;
-  background: var(--ink);
-  color: #faf8ee;
+.language-switch label { font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: #5d715c; cursor: pointer; }
+.language-field { position: relative; display: block; min-width: 122px; }
+.language-field select {
+  appearance: none;
+  width: 100%;
+  min-height: 37px;
+  padding: 7px 33px 7px 11px;
+  border: 1px solid #a9b7a0;
+  border-radius: 8px;
+  background: #f8f7ed;
+  color: var(--ink);
   font: inherit;
   font-size: 13px;
   cursor: pointer;
 }
-.language-switch select:focus-visible { outline: 2px solid #679153; outline-offset: 2px; }
+.language-field select:focus-visible { outline: 2px solid #679153; outline-offset: 2px; }
+.language-chevron { position: absolute; right: 14px; top: 50%; width: 7px; height: 7px; border-right: 2px solid #52684f; border-bottom: 2px solid #52684f; transform: translateY(-70%) rotate(45deg); pointer-events: none; }
 .language-switch option { background: #f7f4e9; color: #1c2f22; }
-[data-theme='dark'] .language-switch { background: #1b2a22; border-color: #506653; }
-[data-theme='dark'] .language-switch select { background: #c5d7b3; color: #17251b; }
+[data-theme='dark'] .language-switch label { color: #b4c9ae; }
+[data-theme='dark'] .language-field select { background: #1b2a22; color: #e9f0e5; border-color: #617b65; }
+[data-theme='dark'] .language-chevron { border-color: #b4c9ae; }
 [data-theme='dark'] .language-switch option { background: #1b2a22; color: #faf8ee; }
 
 html[lang='th'] {
@@ -51,7 +53,7 @@ html[lang='th'] .eyebrow { letter-spacing: .3px; }
 @media (max-width: 520px) {
   .heading-controls { margin-top: 16px; flex-wrap: wrap; }
   .heading-controls .view-switch { margin-top: 0; }
-  .language-switch select { min-height: 30px; }
+  .language-field select { min-height: 37px; }
   html[lang='th'] .garden-heading h1 { font-size: 30px; }
   html[lang='th'] .destination-nav button { font-size: 13px; }
   html[lang='th'] .site-header { gap: 8px; padding-inline: 4%; }

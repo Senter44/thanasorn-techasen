@@ -33,7 +33,7 @@ test('language selector lists English and Thai and can grow with more options', 
   assert.match(html, /<option value="en"[^>]*>English<\/option>/);
   assert.match(html, /<option value="th"[^>]*>ไทย<\/option>/);
   assert.match(html, /src="\.\/language-init\.js\?v=1"/);
-  assert.match(html, /href="\.\/language\.css\?v=2"/);
+  assert.match(html, /href="\.\/language\.css\?v=3"/);
   const main = readFileSync(new URL('../dist/main.js', import.meta.url), 'utf8');
   assert.match(main, /i18n\.mjs/);
   assert.match(main, /languageSelect\.addEventListener\('change'/);
