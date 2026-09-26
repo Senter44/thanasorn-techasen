@@ -27,11 +27,15 @@ test('light and dark modes are available without changing the 3D scene', () => {
   const main = readFileSync(new URL('../dist/main.js', import.meta.url), 'utf8');
   assert.match(main, /theme-state\.mjs/);
 });
-test('English and Thai controls are included in the static portfolio', () => {
-  assert.match(html, /id="language-toggle"/);
+test('language selector lists English and Thai and can grow with more options', () => {
+  assert.match(html, /<label[^>]*for="language-select"/);
+  assert.match(html, /<select id="language-select"[^>]*>/);
+  assert.match(html, /<option value="en"[^>]*>English<\/option>/);
+  assert.match(html, /<option value="th"[^>]*>ไทย<\/option>/);
   assert.match(html, /src="\.\/language-init\.js\?v=1"/);
   const main = readFileSync(new URL('../dist/main.js', import.meta.url), 'utf8');
   assert.match(main, /i18n\.mjs/);
+  assert.match(main, /languageSelect\.addEventListener\('change'/);
 });
 test('the complete Three.js import graph is vendored locally',()=>{
   const root=new URL('../dist/',import.meta.url);
