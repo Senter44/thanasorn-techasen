@@ -29,7 +29,7 @@ test('wind bends the trunk and crown together while their shadows share one cloc
     assert.match(shader.vertexShader, /uniform float treeWindTime/);
     assert.match(shader.vertexShader, /modelMatrix \* vec4\(position, 1\.0\)/);
     assert.match(shader.vertexShader, /smoothstep\(0\.35, 2\.5, treeWorldPosition\.y\)/);
-    assert.match(shader.vertexShader, /transpose\(mat3\(modelMatrix\)\)/);
+    assert.match(shader.vertexShader, /dot\(treeBasis\[0\], worldBend\)/);
     assert.strictEqual(shader.uniforms.treeWindTime, wind.uniform);
   }
   wind.setTime(2.5);
