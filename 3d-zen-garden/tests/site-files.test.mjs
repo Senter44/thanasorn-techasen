@@ -79,7 +79,8 @@ test('changed scene detail modules use revisioned URLs for returning visitors', 
   assert.match(scene, /focus-details\.js\?v=4/);
   assert.match(scene, /detail-diorama\.js\?v=2/);
   assert.match(diorama, /detail-layout\.mjs\?v=2/);
-  assert.match(main, /scene\.js\?v=6/);
+  assert.match(main, /scene\.js\?v=7/);
+  assert.match(scene, /tree-wind\.mjs\?v=1/);
   assert.match(html, /main\.js\?v=three-9/);
 });
 
