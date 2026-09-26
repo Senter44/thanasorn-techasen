@@ -6,7 +6,7 @@ import {detailGardenSurfaces,detailPondWater,addGroundDetails} from './scene-det
 import {addFocusDetails} from './focus-details.js?v=4';
 import {addDetailedDiorama} from './detail-diorama.js?v=2';
 import {applyPhotographicStone} from './photo-materials.js';
-import {installTreeWind} from './tree-wind.mjs?v=3';
+import {installTreeWind} from './tree-wind.mjs?v=4';
 
 const anchors = {
   toolkit:new THREE.Vector3(-4,2.2,-2),

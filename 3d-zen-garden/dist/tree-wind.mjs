@@ -30,9 +30,13 @@ function addWindToMaterial(material, uniform) {
   material.needsUpdate = true;
 }
 
-export function installTreeWind(meshes, makeDepthMaterial) {
-  const treeMeshes = Array.isArray(meshes) ? meshes.filter(mesh => mesh?.isMesh) : [];
-  if (!treeMeshes.length) return null;
+export function installTreeWind(nodes, makeDepthMaterial) {
+  const treeMeshes = new Set();
+  for (const node of Array.isArray(nodes) ? nodes : []) {
+    if (node?.traverse) node.traverse(child => { if (child.isMesh) treeMeshes.add(child); });
+    else if (node?.isMesh) treeMeshes.add(node);
+  }
+  if (!treeMeshes.size) return null;
   const uniform = {value: 0};
   for (const mesh of treeMeshes) {
     for (const material of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {

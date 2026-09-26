@@ -88,11 +88,11 @@ test('changed scene detail modules use revisioned URLs for returning visitors', 
   assert.match(scene, /focus-details\.js\?v=4/);
   assert.match(scene, /detail-diorama\.js\?v=2/);
   assert.match(diorama, /detail-layout\.mjs\?v=2/);
-  assert.match(main, /scene\.js\?v=9/);
-  assert.match(scene, /tree-wind\.mjs\?v=3/);
+  assert.match(main, /scene\.js\?v=10/);
+  assert.match(scene, /tree-wind\.mjs\?v=4/);
   assert.match(scene, /Perimeter_Weathered_silver_brown_bark/);
   assert.doesNotMatch(scene, /wind-leaves\.mjs/);
-  assert.match(html, /main\.js\?v=three-12/);
+  assert.match(html, /main\.js\?v=three-13/);
 });
 
 test('high-detail preview keeps its photographic stone maps local and web-sized', () => {
