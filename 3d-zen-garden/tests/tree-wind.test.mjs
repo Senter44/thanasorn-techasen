@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {installTreeWind} from '../dist/tree-wind.mjs';
+import {installTreeWind, WIND_GUST_STRENGTH} from '../dist/tree-wind.mjs';
 
 function compile(material) {
   const shader = {uniforms: {}, vertexShader: '#include <common>\n#include <begin_vertex>'};
@@ -10,6 +10,7 @@ function compile(material) {
 }
 
 test('wind passes across each tree crown and updates its shadow with one shared clock', () => {
+  assert.ok(WIND_GUST_STRENGTH >= .28, 'tree motion must remain visible from the default camera');
   const materials = [{name: 'Japanese foliage 00'}, {name: 'Japanese foliage 01'}];
   const canopy = {isMesh: true, material: materials};
   const depthMaterial = {};

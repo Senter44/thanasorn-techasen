@@ -51,6 +51,15 @@ test('language dropdown sits above the portfolio view control', () => {
   assert.match(css, /\.heading-controls\s*\{[^}]*flex-direction:\s*column/s);
   assert.match(css, /\.heading-controls\s*\{[^}]*align-items:\s*stretch/s);
 });
+test('garden text labels appear only for hover or keyboard focus', () => {
+  const css = readFileSync(new URL('../dist/three-garden.css', import.meta.url), 'utf8');
+  assert.match(css, /\.place-label\s*\{[^}]*opacity:\s*0/s);
+  assert.match(css, /\.place:hover \.place-label/);
+  assert.match(css, /\.place:focus-visible \.place-label/);
+  assert.match(css, /\.place\.is-hovered \.place-label/);
+  assert.match(css, /@media\s*\(hover:\s*none\)/);
+  assert.match(html, /three-garden\.css\?v=4/);
+});
 test('the complete Three.js import graph is vendored locally',()=>{
   const root=new URL('../dist/',import.meta.url);
   const seen=new Set();
@@ -79,9 +88,10 @@ test('changed scene detail modules use revisioned URLs for returning visitors', 
   assert.match(scene, /focus-details\.js\?v=4/);
   assert.match(scene, /detail-diorama\.js\?v=2/);
   assert.match(diorama, /detail-layout\.mjs\?v=2/);
-  assert.match(main, /scene\.js\?v=7/);
-  assert.match(scene, /tree-wind\.mjs\?v=1/);
-  assert.match(html, /main\.js\?v=three-10/);
+  assert.match(main, /scene\.js\?v=8/);
+  assert.match(scene, /tree-wind\.mjs\?v=2/);
+  assert.match(scene, /wind-leaves\.mjs\?v=1/);
+  assert.match(html, /main\.js\?v=three-11/);
 });
 
 test('high-detail preview keeps its photographic stone maps local and web-sized', () => {
