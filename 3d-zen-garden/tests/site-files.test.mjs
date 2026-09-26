@@ -33,7 +33,7 @@ test('language selector lists English and Thai and can grow with more options', 
   assert.match(html, /<option value="en"[^>]*>English<\/option>/);
   assert.match(html, /<option value="th"[^>]*>ไทย<\/option>/);
   assert.match(html, /src="\.\/language-init\.js\?v=1"/);
-  assert.match(html, /href="\.\/language\.css\?v=3"/);
+  assert.match(html, /href="\.\/language\.css\?v=4"/);
   const main = readFileSync(new URL('../dist/main.js', import.meta.url), 'utf8');
   assert.match(main, /i18n\.mjs/);
   assert.match(main, /languageSelect\.addEventListener\('change'/);
@@ -44,6 +44,12 @@ test('language selector reads as a dropdown, not a two-state switch', () => {
   assert.match(html, /class="language-chevron" aria-hidden="true"/);
   assert.match(css, /\.language-field select\s*\{[^}]*appearance:\s*none/s);
   assert.doesNotMatch(css, /\.language-switch\s*\{[^}]*border-radius:\s*30px/s);
+});
+test('language dropdown sits above the portfolio view control', () => {
+  const css = readFileSync(new URL('../dist/language.css', import.meta.url), 'utf8');
+  assert.ok(html.indexOf('class="language-switch"') < html.indexOf('class="view-switch"'));
+  assert.match(css, /\.heading-controls\s*\{[^}]*flex-direction:\s*column/s);
+  assert.match(css, /\.heading-controls\s*\{[^}]*align-items:\s*stretch/s);
 });
 test('the complete Three.js import graph is vendored locally',()=>{
   const root=new URL('../dist/',import.meta.url);
