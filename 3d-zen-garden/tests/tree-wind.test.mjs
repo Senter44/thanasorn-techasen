@@ -36,6 +36,30 @@ test('wind bends the trunk and crown together while their shadows share one cloc
   assert.equal(wind.uniform.value, 2.5);
 });
 
+test('a multi-primitive canopy group animates every leaf mesh, not only its trunk', () => {
+  const leaves = Array.from({length: 5}, (_, index) => ({
+    isMesh: true,
+    material: {name: `foliage ${index}`},
+  }));
+  const canopy = {
+    isMesh: false,
+    traverse(visitor) {
+      visitor(this);
+      leaves.forEach(visitor);
+    },
+  };
+  const bark = {isMesh: true, material: {name: 'bark'}};
+  const wind = installTreeWind([canopy, bark], () => ({}));
+
+  assert.ok(wind, 'the canopy group must not be discarded');
+  for (const leaf of leaves) {
+    assert.ok(leaf.customDepthMaterial, 'each leaf mesh needs a moving shadow');
+    assert.strictEqual(compile(leaf.material).uniforms.treeWindTime, wind.uniform);
+    assert.strictEqual(compile(leaf.customDepthMaterial).uniforms.treeWindTime, wind.uniform);
+  }
+  assert.strictEqual(compile(bark.material).uniforms.treeWindTime, wind.uniform);
+});
+
 test('missing tree meshes leave the garden unchanged', () => {
   assert.equal(installTreeWind(null, () => ({})), null);
   assert.equal(installTreeWind([{isMesh: false}], () => ({})), null);
