@@ -1,12 +1,22 @@
 export const WIND_GUST_STRENGTH = 0.58;
 
 const windVertex = `#include <begin_vertex>
-  float crown = smoothstep(1.2, 2.7, position.y);
-  float gust = max(0.0, sin(treeWindTime * 0.9 - position.x * 0.55 + position.z * 0.18));
+  vec3 treeWorldPosition = (modelMatrix * vec4(position, 1.0)).xyz;
+  float crown = smoothstep(0.35, 2.5, treeWorldPosition.y);
+  float gust = max(0.0, sin(treeWindTime * 0.9 - treeWorldPosition.x * 0.55 + treeWorldPosition.z * 0.18));
   gust *= gust * gust;
-  float sway = sin(treeWindTime * 1.25 - position.x * 0.45 + position.z * 0.3);
-  transformed.x += crown * (0.11 * sway + ${WIND_GUST_STRENGTH} * gust);
-  transformed.z += crown * 0.09 * sin(treeWindTime * 1.05 - position.x * 0.52);`;
+  float sway = sin(treeWindTime * 1.25 - treeWorldPosition.x * 0.45 + treeWorldPosition.z * 0.3);
+  vec3 worldBend = crown * vec3(
+    0.11 * sway + ${WIND_GUST_STRENGTH} * gust,
+    0.0,
+    0.09 * sin(treeWindTime * 1.05 - treeWorldPosition.x * 0.52)
+  );
+  mat3 treeBasis = mat3(modelMatrix);
+  transformed += vec3(
+    dot(treeBasis[0], worldBend),
+    dot(treeBasis[1], worldBend),
+    dot(treeBasis[2], worldBend)
+  );`;
 
 function addWindToMaterial(material, uniform) {
   const original = material.onBeforeCompile;
@@ -20,15 +30,19 @@ function addWindToMaterial(material, uniform) {
   material.needsUpdate = true;
 }
 
-export function installTreeWind(canopy, depthMaterial) {
-  if (!canopy?.isMesh) return null;
+export function installTreeWind(meshes, makeDepthMaterial) {
+  const treeMeshes = Array.isArray(meshes) ? meshes.filter(mesh => mesh?.isMesh) : [];
+  if (!treeMeshes.length) return null;
   const uniform = {value: 0};
-  for (const material of Array.isArray(canopy.material) ? canopy.material : [canopy.material]) {
-    addWindToMaterial(material, uniform);
-  }
-  if (depthMaterial) {
-    addWindToMaterial(depthMaterial, uniform);
-    canopy.customDepthMaterial = depthMaterial;
+  for (const mesh of treeMeshes) {
+    for (const material of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {
+      addWindToMaterial(material, uniform);
+    }
+    const depthMaterial = makeDepthMaterial?.(mesh);
+    if (depthMaterial) {
+      addWindToMaterial(depthMaterial, uniform);
+      mesh.customDepthMaterial = depthMaterial;
+    }
   }
   return {uniform, setTime(seconds) { uniform.value = seconds; }};
 }
