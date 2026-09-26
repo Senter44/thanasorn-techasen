@@ -1,5 +1,19 @@
 import {createState, navigate, setView, toggleMotion, shouldAnimate} from './garden-state.mjs';
+import {resolveTheme, toggleTheme, themeButtonLabel} from './theme-state.mjs?v=1';
 const $ = selector => document.querySelector(selector);
+const themeButton = $('#theme-toggle');
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  themeButton.setAttribute('aria-label', themeButtonLabel(theme));
+  $('#theme-button-label').textContent = theme === 'dark' ? 'Light' : 'Dark';
+  $('meta[name="theme-color"]').content = theme === 'dark' ? '#101a17' : '#eae7dc';
+}
+applyTheme(resolveTheme(document.documentElement.dataset.theme, matchMedia('(prefers-color-scheme: dark)').matches));
+themeButton.addEventListener('click', () => {
+  const next = toggleTheme(document.documentElement.dataset.theme);
+  applyTheme(next);
+  try { localStorage.setItem('garden-theme', next); } catch { /* The switch still works without storage. */ }
+});
 const dialog = $('#detail-dialog');
 const gardenMap = $('#garden-map');
 const physicsDialog = $('#physics-dialog');

@@ -5,13 +5,14 @@
   <meta name="description" content="Explore Thanasorn Techasen’s backend engineering, cloud infrastructure, and developer tools through an interactive zen garden.">
   <meta name="theme-color" content="#eae7dc"><title>Thanasorn Techasen — 3D Zen Garden</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='8' fill='%23111c20'/%3E%3Cpath d='M9 12h22M20 12v19' stroke='%23c6daac' stroke-width='4'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="./garden.css?v=2"><link rel="stylesheet" href="./three-garden.css?v=3">
+  <script src="./theme-init.js?v=1"></script>
+  <link rel="stylesheet" href="./garden.css?v=2"><link rel="stylesheet" href="./three-garden.css?v=3"><link rel="stylesheet" href="./theme.css?v=1">
   <script type="importmap">{"imports":{"three":"./vendor/three.module.js","three/addons/":"./vendor/addons/"}}</script>
-  <script type="module" src="./main.js?v=three-6"></script>
+  <script type="module" src="./main.js?v=three-7"></script>
 </head>
 <body>
   <a class="skip-link" href="#destinations">Skip to portfolio navigation</a>
-  <header class="site-header"><a class="identity" href="./" aria-label="Thanasorn Techasen, home"><span class="monogram" aria-hidden="true">tt.</span><span>Thanasorn Techasen<small>Backend & cloud engineer</small></span></a><div class="header-actions"><span class="location">BANGKOK, THAILAND</span><button type="button" class="quiet-button" data-open="contact">Let’s talk ↗</button></div></header>
+  <header class="site-header"><a class="identity" href="./" aria-label="Thanasorn Techasen, home"><span class="monogram" aria-hidden="true">tt.</span><span>Thanasorn Techasen<small>Backend & cloud engineer</small></span></a><div class="header-actions"><span class="location">BANGKOK, THAILAND</span><button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch to dark mode"><span id="theme-button-label" aria-hidden="true">Dark</span></button><button type="button" class="quiet-button" data-open="contact">Let’s talk ↗</button></div></header>
   <main>
     <div class="garden-heading"><div><p class="eyebrow">AN EXPLORABLE 3D PORTFOLIO</p><h1>A garden of <em>possibilities.</em></h1></div><div class="view-switch" role="group" aria-label="Portfolio view"><button id="map-view" type="button" aria-pressed="true">3D garden</button><button id="list-view" type="button" aria-pressed="false">Quick view</button></div></div>
     <section id="garden-map" class="garden-map" aria-label="Interactive portfolio garden">
