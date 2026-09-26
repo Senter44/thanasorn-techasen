@@ -38,6 +38,13 @@ test('language selector lists English and Thai and can grow with more options', 
   assert.match(main, /i18n\.mjs/);
   assert.match(main, /languageSelect\.addEventListener\('change'/);
 });
+test('language selector reads as a dropdown, not a two-state switch', () => {
+  const css = readFileSync(new URL('../dist/language.css', import.meta.url), 'utf8');
+  assert.match(html, /class="language-field"/);
+  assert.match(html, /class="language-chevron" aria-hidden="true"/);
+  assert.match(css, /\.language-field select\s*\{[^}]*appearance:\s*none/s);
+  assert.doesNotMatch(css, /\.language-switch\s*\{[^}]*border-radius:\s*30px/s);
+});
 test('the complete Three.js import graph is vendored locally',()=>{
   const root=new URL('../dist/',import.meta.url);
   const seen=new Set();
